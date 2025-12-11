@@ -13,7 +13,7 @@ async function createResources(app: ModuleAPI) {
         currentPerformerId: null as string | null,
     });
 
-    const myParticipantIdState = await app.statesAPI.createUserAgentState('myParticipantId', null as string | null);
+    const myParticipantIdsState = await app.statesAPI.createUserAgentState('myParticipantIds', [] as string[]);
 
     const actions = app.createActions({
         addParticipant: async (args: { name: string; socialLinks: SocialLink[] }) => {
@@ -68,7 +68,7 @@ async function createResources(app: ModuleAPI) {
         },
     });
 
-    return { states, actions, userAgentState: { myParticipantId: myParticipantIdState } };
+    return { states, actions, userAgentState: { myParticipantIds: myParticipantIdsState } };
 }
 
 export type Actions = Awaited<ReturnType<typeof createResources>>['actions'];
@@ -78,13 +78,17 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
 
     app.registerRoute('/', {}, () => {
         const participants = states.peopleQueue.useState();
-        const myParticipantId = userAgentState.myParticipantId.useState();
+        const myParticipantIds = userAgentState.myParticipantIds.useState();
+
+        const myParticipants = participants.filter(p => myParticipantIds.includes(p.id));
 
         return (
             <SignupPage
                 actions={actions}
-                onSetMyParticipantId={(id) => userAgentState.myParticipantId.setState(id)}
-                myParticipantId={myParticipantId}
+                onAddMyParticipantId={(id) => {
+                    userAgentState.myParticipantIds.setState([...myParticipantIds, id]);
+                }}
+                myParticipants={myParticipants}
             />
         );
     });

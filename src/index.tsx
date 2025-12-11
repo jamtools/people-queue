@@ -5,14 +5,15 @@ import { SignupPage } from './pages/SignupPage';
 import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
+import {ModuleAPI} from 'springboard/engine/module_api';
 
-async function createResources(app) {
+async function createResources(app: ModuleAPI) {
     const states = await app.createStates({
         peopleQueue: [] as Participant[],
         currentPerformerId: null as string | null,
     });
 
-    const myParticipantIdState = await app.createUserAgentState('myParticipantId', null as string | null);
+    const myParticipantIdState = await app.statesAPI.createUserAgentState('myParticipantId', null as string | null);
 
     const actions = app.createActions({
         addParticipant: async (args: { name: string; socialLinks: SocialLink[] }) => {
@@ -27,7 +28,7 @@ async function createResources(app) {
                 queue.push(newParticipant);
             });
 
-            return newParticipant.id;
+            return { id: newParticipant.id };
         },
 
         updateParticipant: async (args: { id: string; name: string; socialLinks: SocialLink[] }) => {

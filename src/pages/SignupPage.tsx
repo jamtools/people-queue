@@ -23,12 +23,12 @@ export function SignupPage({ actions, onSetMyParticipantId, myParticipantId }: S
             return;
         }
 
-        const participantId = await actions.addParticipant({
+        const result = await actions.addParticipant({
             name: name.trim(),
             socialLinks,
         });
 
-        onSetMyParticipantId(participantId);
+        onSetMyParticipantId(result.id);
         setName('');
         setSocialLinks([]);
         alert('Successfully added to the queue!');

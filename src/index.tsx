@@ -6,15 +6,13 @@ import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
 
-async function createResources(app: typeof springboard.modules[string]) {
+async function createResources(app) {
     const states = await app.createStates({
         peopleQueue: [] as Participant[],
         currentPerformerId: null as string | null,
     });
 
-    const userAgentState = await app.createUserAgentState({
-        myParticipantId: null as string | null,
-    });
+    const myParticipantIdState = await app.createUserAgentState('myParticipantId', null as string | null);
 
     const actions = app.createActions({
         addParticipant: async (args: { name: string; socialLinks: SocialLink[] }) => {
@@ -25,7 +23,7 @@ async function createResources(app: typeof springboard.modules[string]) {
                 order: states.peopleQueue.getState().length,
             };
 
-            states.peopleQueue.setStateImmer(queue => {
+            states.peopleQueue.setStateImmer((queue: Participant[]) => {
                 queue.push(newParticipant);
             });
 
@@ -33,8 +31,8 @@ async function createResources(app: typeof springboard.modules[string]) {
         },
 
         updateParticipant: async (args: { id: string; name: string; socialLinks: SocialLink[] }) => {
-            states.peopleQueue.setStateImmer(queue => {
-                const participant = queue.find(p => p.id === args.id);
+            states.peopleQueue.setStateImmer((queue: Participant[]) => {
+                const participant = queue.find((p: Participant) => p.id === args.id);
                 if (participant) {
                     participant.name = args.name;
                     participant.socialLinks = args.socialLinks;
@@ -49,11 +47,11 @@ async function createResources(app: typeof springboard.modules[string]) {
         },
 
         removeParticipant: async (args: { id: string }) => {
-            states.peopleQueue.setStateImmer(queue => {
-                const index = queue.findIndex(p => p.id === args.id);
+            states.peopleQueue.setStateImmer((queue: Participant[]) => {
+                const index = queue.findIndex((p: Participant) => p.id === args.id);
                 if (index !== -1) {
                     queue.splice(index, 1);
-                    queue.forEach((p, i) => {
+                    queue.forEach((p: Participant, i: number) => {
                         p.order = i;
                     });
                 }
@@ -69,7 +67,7 @@ async function createResources(app: typeof springboard.modules[string]) {
         },
     });
 
-    return { states, actions, userAgentState };
+    return { states, actions, userAgentState: { myParticipantId: myParticipantIdState } };
 }
 
 export type Actions = Awaited<ReturnType<typeof createResources>>['actions'];

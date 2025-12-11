@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "sb dev src/index.tsx",
     "build": "sb build src/index.tsx",
-    "start": "sb start"
+    "start": "sb start",
+    "check-types": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -28,5 +29,6 @@
     "@types/react-dom": "^19.2.3",
     "springboard-cli": "0.16.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "type": "module"
 }

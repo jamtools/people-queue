@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
 import { Participant, SocialLink } from '../types';
 import { SocialLinksEditor } from './SocialLinksEditor';
+import { BackstagePageActions } from '../pages/BackstagePage';
 
 type QueueManagerProps = {
     participants: Participant[];
     currentPerformerId: string | null;
-    onUpdateParticipant: (args: { id: string; name: string; socialLinks: SocialLink[] }) => Promise<void>;
-    onReorderParticipants: (args: { participants: Participant[] }) => Promise<void>;
-    onRemoveParticipant: (args: { id: string }) => Promise<void>;
-    onSetCurrentPerformer: (args: { id: string | null }) => Promise<void>;
+    actions: BackstagePageActions;
 };
 
 export function QueueManager({
     participants,
     currentPerformerId,
-    onUpdateParticipant,
-    onReorderParticipants,
-    onRemoveParticipant,
-    onSetCurrentPerformer
+    actions
 }: QueueManagerProps) {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
@@ -28,7 +23,7 @@ export function QueueManager({
         if (index > 0) {
             const newParticipants = [...participants];
             [newParticipants[index - 1], newParticipants[index]] = [newParticipants[index], newParticipants[index - 1]];
-            onReorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
+            actions.reorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
         }
     };
 
@@ -37,13 +32,13 @@ export function QueueManager({
         if (index < participants.length - 1) {
             const newParticipants = [...participants];
             [newParticipants[index], newParticipants[index + 1]] = [newParticipants[index + 1], newParticipants[index]];
-            onReorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
+            actions.reorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
         }
     };
 
     const handleDelete = (id: string) => {
         if (confirm('Remove this participant from the queue?')) {
-            onRemoveParticipant({ id });
+            actions.removeParticipant({ id });
         }
     };
 
@@ -55,7 +50,7 @@ export function QueueManager({
 
     const handleSaveEdit = () => {
         if (editingId) {
-            onUpdateParticipant({
+            actions.updateParticipant({
                 id: editingId,
                 name: editName,
                 socialLinks: editLinks,
@@ -181,7 +176,7 @@ export function QueueManager({
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                     {currentPerformerId === participant.id ? (
                                         <button
-                                            onClick={() => onSetCurrentPerformer({ id: null })}
+                                            onClick={() => actions.setCurrentPerformer({ id: null })}
                                             style={{
                                                 padding: '8px 16px',
                                                 backgroundColor: '#f44336',
@@ -195,7 +190,7 @@ export function QueueManager({
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => onSetCurrentPerformer({ id: participant.id })}
+                                            onClick={() => actions.setCurrentPerformer({ id: participant.id })}
                                             style={{
                                                 padding: '8px 16px',
                                                 backgroundColor: '#4caf50',

@@ -1,8 +1,8 @@
 import React from 'react';
 import springboard from 'springboard';
 import { Participant, SocialLink } from './types';
-import { SignupPage } from './pages/SignupPage';
-import { BackstagePage } from './pages/BackstagePage';
+import { SignupPage, SignupPageActions } from './pages/SignupPage';
+import { BackstagePage, BackstagePageActions } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
 
@@ -90,7 +90,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
         setCurrentPerformer: async (args: SetCurrentPerformerArgs) => {
             states.currentPerformerId.setState(args.id);
         },
-    });
+    } satisfies SignupPageActions & BackstagePageActions);
 
     app.registerRoute('/', {}, () => {
         const participants = states.peopleQueue.useState();
@@ -98,7 +98,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
 
         return (
             <SignupPage
-                onAddParticipant={actions.addParticipant}
+                actions={actions}
                 onSetMyParticipantId={(id) => userAgentState.myParticipantId.setState(id)}
                 myParticipantId={myParticipantId}
             />
@@ -113,10 +113,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
             <BackstagePage
                 participants={participants}
                 currentPerformerId={currentPerformerId}
-                onUpdateParticipant={actions.updateParticipant}
-                onReorderParticipants={actions.reorderParticipants}
-                onRemoveParticipant={actions.removeParticipant}
-                onSetCurrentPerformer={actions.setCurrentPerformer}
+                actions={actions}
             />
         );
     });

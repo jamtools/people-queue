@@ -3,22 +3,23 @@ import { useNavigate } from 'react-router';
 import { Participant, SocialLink } from '../types';
 import { QueueManager } from '../components/QueueManager';
 
+export type BackstagePageActions = {
+    updateParticipant: (args: { id: string; name: string; socialLinks: SocialLink[] }) => Promise<void>;
+    reorderParticipants: (args: { participants: Participant[] }) => Promise<void>;
+    removeParticipant: (args: { id: string }) => Promise<void>;
+    setCurrentPerformer: (args: { id: string | null }) => Promise<void>;
+};
+
 type BackstagePageProps = {
     participants: Participant[];
     currentPerformerId: string | null;
-    onUpdateParticipant: (args: { id: string; name: string; socialLinks: SocialLink[] }) => Promise<void>;
-    onReorderParticipants: (args: { participants: Participant[] }) => Promise<void>;
-    onRemoveParticipant: (args: { id: string }) => Promise<void>;
-    onSetCurrentPerformer: (args: { id: string | null }) => Promise<void>;
+    actions: BackstagePageActions;
 };
 
 export function BackstagePage({
     participants,
     currentPerformerId,
-    onUpdateParticipant,
-    onReorderParticipants,
-    onRemoveParticipant,
-    onSetCurrentPerformer,
+    actions,
 }: BackstagePageProps) {
     const navigate = useNavigate();
     const currentPerformer = participants.find(p => p.id === currentPerformerId);
@@ -92,10 +93,7 @@ export function BackstagePage({
             <QueueManager
                 participants={participants}
                 currentPerformerId={currentPerformerId}
-                onUpdateParticipant={onUpdateParticipant}
-                onReorderParticipants={onReorderParticipants}
-                onRemoveParticipant={onRemoveParticipant}
-                onSetCurrentPerformer={onSetCurrentPerformer}
+                actions={actions}
             />
         </div>
     );

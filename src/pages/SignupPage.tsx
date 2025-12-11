@@ -3,13 +3,17 @@ import { useNavigate } from 'react-router';
 import { SocialLink } from '../types';
 import { SocialLinksEditor } from '../components/SocialLinksEditor';
 
+export type SignupPageActions = {
+    addParticipant: (args: { name: string; socialLinks: SocialLink[] }) => Promise<string>;
+};
+
 type SignupPageProps = {
-    onAddParticipant: (args: { name: string; socialLinks: SocialLink[] }) => Promise<string>;
+    actions: SignupPageActions;
     onSetMyParticipantId: (id: string | null) => void;
     myParticipantId: string | null;
 };
 
-export function SignupPage({ onAddParticipant, onSetMyParticipantId, myParticipantId }: SignupPageProps) {
+export function SignupPage({ actions, onSetMyParticipantId, myParticipantId }: SignupPageProps) {
     const [name, setName] = useState('');
     const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
     const navigate = useNavigate();
@@ -22,7 +26,7 @@ export function SignupPage({ onAddParticipant, onSetMyParticipantId, myParticipa
             return;
         }
 
-        const participantId = await onAddParticipant({
+        const participantId = await actions.addParticipant({
             name: name.trim(),
             socialLinks,
         });

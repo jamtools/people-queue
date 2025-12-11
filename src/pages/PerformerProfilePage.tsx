@@ -98,7 +98,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     ) : (
                         sortedLinks.map((link) => {
                             const url = buildSocialUrl(link.url, link.type);
-                            const icon = getPlatformIcon(link.type);
+                            const Icon = getPlatformIcon(link.type);
 
                             return (
                                 <a
@@ -130,7 +130,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
                                     }}
                                 >
-                                    <span style={{ fontSize: '32px' }}>{icon}</span>
+                                    <Icon size={32} />
                                     <span style={{ flex: 1 }}>
                                         {link.type.charAt(0).toUpperCase() + link.type.slice(1)}
                                     </span>

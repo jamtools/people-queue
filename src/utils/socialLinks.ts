@@ -1,4 +1,15 @@
+import React from 'react';
 import { PlatformType } from '../types';
+import {
+    IconBrandInstagram,
+    IconBrandFacebook,
+    IconBrandSoundcloud,
+    IconBrandSpotify,
+    IconBrandTwitter,
+    IconBrandYoutube,
+    IconBrandTiktok,
+    IconLink,
+} from '@tabler/icons-react';
 
 export function generateSocialLinkId(): string {
     return `link-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -8,19 +19,37 @@ export function generateParticipantId(): string {
     return `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export function getPlatformIcon(type: PlatformType): string {
-    const icons: Record<PlatformType, string> = {
-        instagram: '📷',
-        bandcamp: '🎵',
-        facebook: '👥',
-        soundcloud: '☁️',
-        spotify: '🎧',
-        twitter: '🐦',
-        youtube: '▶️',
-        tiktok: '🎬',
-        custom: '🔗',
-    };
-    return icons[type] || '🔗';
+const BandcampIcon = () => {
+    return React.createElement(
+        'svg',
+        { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'currentColor' },
+        React.createElement('path', { d: 'M0 18.75l7.437-13.5h16.563l-7.438 13.5z' })
+    );
+};
+
+export function getPlatformIcon(type: PlatformType): React.ComponentType<{ size?: number }> {
+    switch (type) {
+        case 'instagram':
+            return IconBrandInstagram;
+        case 'facebook':
+            return IconBrandFacebook;
+        case 'soundcloud':
+            return IconBrandSoundcloud;
+        case 'spotify':
+            return IconBrandSpotify;
+        case 'twitter':
+            return IconBrandTwitter;
+        case 'youtube':
+            return IconBrandYoutube;
+        case 'tiktok':
+            return IconBrandTiktok;
+        case 'bandcamp':
+            return BandcampIcon;
+        case 'custom':
+            return IconLink;
+        default:
+            return IconLink;
+    }
 }
 
 export function extractUsername(url: string, type: PlatformType): string {

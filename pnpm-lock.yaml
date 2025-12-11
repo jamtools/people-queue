@@ -14,6 +14,9 @@ importers:
       '@springboardjs/platforms-node':
         specifier: 0.16.0
         version: 0.16.0(isomorphic-ws@4.0.1(ws@8.18.3))(springboard@0.16.0(immer@10.2.0)(json-rpc-2.0@1.7.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(rxjs@7.8.2))(ws@8.18.3)
+      '@tabler/icons-react':
+        specifier: ^3.35.0
+        version: 3.35.0(react@19.2.1)
       react:
         specifier: ^19.2.1
         version: 19.2.1
@@ -238,6 +241,14 @@ packages:
       isomorphic-ws: ^4.0.1
       springboard: 0.16.0
       ws: ^8.18.0
+
+  '@tabler/icons-react@3.35.0':
+    resolution: {integrity: sha512-XG7t2DYf3DyHT5jxFNp5xyLVbL4hMJYJhiSdHADzAjLRYfL7AnjlRfiHDHeXxkb2N103rEIvTsBRazxXtAUz2g==}
+    peerDependencies:
+      react: '>= 16'
+
+  '@tabler/icons@3.35.0':
+    resolution: {integrity: sha512-yYXe+gJ56xlZFiXwV9zVoe3FWCGuZ/D7/G4ZIlDtGxSx5CGQK110wrnT29gUj52kEZoxqF7oURTk97GQxELOFQ==}
 
   '@types/node@25.0.0':
     resolution: {integrity: sha512-rl78HwuZlaDIUSeUKkmogkhebA+8K1Hy7tddZuJ3D0xV8pZSfsYGTsliGUol1JPzu9EKnTxPC4L1fiWouStRew==}
@@ -701,6 +712,13 @@ snapshots:
       reconnecting-websocket: 4.4.0
       springboard: 0.16.0(immer@10.2.0)(json-rpc-2.0@1.7.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(rxjs@7.8.2)
       ws: 8.18.3
+
+  '@tabler/icons-react@3.35.0(react@19.2.1)':
+    dependencies:
+      '@tabler/icons': 3.35.0
+      react: 19.2.1
+
+  '@tabler/icons@3.35.0': {}
 
   '@types/node@25.0.0':
     dependencies:

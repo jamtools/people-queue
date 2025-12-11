@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IconTrash, IconPlus } from '@tabler/icons-react';
 import { SocialLink, PlatformType } from '../types';
 import { generateSocialLinkId, getPlatformIcon, extractUsername, buildSocialUrl } from '../utils/socialLinks';
 
@@ -32,7 +33,7 @@ type LinkItemProps = {
 };
 
 function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown, canMoveUp, canMoveDown }: LinkItemProps) {
-    const icon = getPlatformIcon(link.type);
+    const Icon = getPlatformIcon(link.type);
     const [showPlatformMenu, setShowPlatformMenu] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,10 +67,10 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
                 <button
                     type="button"
                     onClick={() => setShowPlatformMenu(!showPlatformMenu)}
-                    style={{ fontSize: '20px', padding: '8px', cursor: 'pointer', border: '1px solid #ccc', borderRadius: '4px' }}
+                    style={{ fontSize: '20px', padding: '8px', cursor: 'pointer', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     title="Change platform"
                 >
-                    {icon}
+                    <Icon size={20} />
                 </button>
                 {showPlatformMenu && (
                     <div style={{
@@ -84,27 +85,30 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
                         minWidth: '150px',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                     }}>
-                        {platformOptions.map((option) => (
-                            <div
-                                key={option.value}
-                                onClick={() => {
-                                    onUpdateType(link.id, option.value);
-                                    setShowPlatformMenu(false);
-                                }}
-                                style={{
-                                    padding: '8px 12px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = '#f0f0f0'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
-                            >
-                                <span>{getPlatformIcon(option.value)}</span>
-                                <span>{option.label}</span>
-                            </div>
-                        ))}
+                        {platformOptions.map((option) => {
+                            const OptionIcon = getPlatformIcon(option.value);
+                            return (
+                                <div
+                                    key={option.value}
+                                    onClick={() => {
+                                        onUpdateType(link.id, option.value);
+                                        setShowPlatformMenu(false);
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = '#f0f0f0'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                                >
+                                    <OptionIcon size={18} />
+                                    <span>{option.label}</span>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -120,10 +124,10 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
             <button
                 type="button"
                 onClick={() => onDelete(link.id)}
-                style={{ padding: '8px 12px', cursor: 'pointer', color: '#d32f2f' }}
+                style={{ padding: '8px', cursor: 'pointer', color: '#d32f2f', border: 'none', background: 'transparent', display: 'flex', alignItems: 'center' }}
                 title="Delete"
             >
-                🗑️
+                <IconTrash size={18} />
             </button>
         </div>
     );
@@ -207,10 +211,13 @@ export function SocialLinksEditor({ links, onChange, maxLinks = 15 }: SocialLink
                     style={{
                         padding: '8px 16px',
                         cursor: canAddMore ? 'pointer' : 'not-allowed',
-                        opacity: canAddMore ? 1 : 0.5
+                        opacity: canAddMore ? 1 : 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
                     }}
                 >
-                    ➕ Add Link
+                    <IconPlus size={16} /> Add Link
                 </button>
                 {!canAddMore && (
                     <span style={{ fontSize: '12px', color: '#666' }}>

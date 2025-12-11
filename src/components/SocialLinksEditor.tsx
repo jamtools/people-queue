@@ -43,6 +43,7 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <button
+                    type="button"
                     onClick={() => onMoveUp(link.id)}
                     disabled={!canMoveUp}
                     style={{ fontSize: '12px', padding: '2px 6px', cursor: canMoveUp ? 'pointer' : 'not-allowed' }}
@@ -51,6 +52,7 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
                     ▲
                 </button>
                 <button
+                    type="button"
                     onClick={() => onMoveDown(link.id)}
                     disabled={!canMoveDown}
                     style={{ fontSize: '12px', padding: '2px 6px', cursor: canMoveDown ? 'pointer' : 'not-allowed' }}
@@ -62,6 +64,7 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
 
             <div style={{ position: 'relative' }}>
                 <button
+                    type="button"
                     onClick={() => setShowPlatformMenu(!showPlatformMenu)}
                     style={{ fontSize: '20px', padding: '8px', cursor: 'pointer', border: '1px solid #ccc', borderRadius: '4px' }}
                     title="Change platform"
@@ -115,6 +118,7 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
             />
 
             <button
+                type="button"
                 onClick={() => onDelete(link.id)}
                 style={{ padding: '8px 12px', cursor: 'pointer', color: '#d32f2f' }}
                 title="Delete"
@@ -197,6 +201,7 @@ export function SocialLinksEditor({ links, onChange, maxLinks = 15 }: SocialLink
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button
+                    type="button"
                     onClick={handleAdd}
                     disabled={!canAddMore}
                     style={{

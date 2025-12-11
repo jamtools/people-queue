@@ -95,53 +95,68 @@ onSetMyParticipantId(participantId); // Update user agent state directly
 
 ## Server Actions
 
-Server actions are async functions that run on the server and can modify server state:
+Server actions are async functions that run on the server and can modify server state.
+
+### Creating Resources with Type Inference
+
+Use a `createResources` function to organize states and actions, then export inferred types:
 
 ```typescript
-const actions = app.createActions({
-    addParticipant: async (args: AddParticipantArgs) => {
-        const newParticipant: Participant = {
-            id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            name: args.name,
-            socialLinks: args.socialLinks,
-            order: states.peopleQueue.getState().length,
-        };
+async function createResources(app: typeof springboard.modules[string]) {
+    const states = await app.createStates({
+        peopleQueue: [] as Participant[],
+        currentPerformerId: null as string | null,
+    });
 
-        states.peopleQueue.setStateImmer(queue => {
-            queue.push(newParticipant);
-        });
+    const userAgentState = await app.createUserAgentState({
+        myParticipantId: null as string | null,
+    });
 
-        return newParticipant.id;
-    },
+    const actions = app.createActions({
+        addParticipant: async (args: { name: string; socialLinks: SocialLink[] }) => {
+            const newParticipant: Participant = {
+                id: generateId(),
+                name: args.name,
+                socialLinks: args.socialLinks,
+                order: states.peopleQueue.getState().length,
+            };
 
-    updateParticipant: async (args: UpdateParticipantArgs) => {
-        states.peopleQueue.setStateImmer(queue => {
-            const participant = queue.find(p => p.id === args.id);
-            if (participant) {
-                participant.name = args.name;
-                participant.socialLinks = args.socialLinks;
-            }
-        });
-    },
-});
+            states.peopleQueue.setStateImmer(queue => {
+                queue.push(newParticipant);
+            });
+
+            return newParticipant.id;
+        },
+
+        updateParticipant: async (args: { id: string; name: string; socialLinks: SocialLink[] }) => {
+            states.peopleQueue.setStateImmer(queue => {
+                const participant = queue.find(p => p.id === args.id);
+                if (participant) {
+                    participant.name = args.name;
+                    participant.socialLinks = args.socialLinks;
+                }
+            });
+        },
+    });
+
+    return { states, actions, userAgentState };
+}
+
+// Export inferred type
+export type Actions = Awaited<ReturnType<typeof createResources>>['actions'];
 ```
 
 ### Action Requirements
 
 1. **Single Argument**: Actions must accept exactly ONE argument (an object)
-2. **Typed Arguments**: Define a type for the arguments object
+2. **Inline Types**: Use inline object types for arguments (no need for separate type definitions)
 3. **Async**: Actions are always async functions
 4. **Return Values**: Actions can return values to the caller
 
 ```typescript
-// ✅ CORRECT - Single object argument
-type AddParticipantArgs = {
-    name: string;
-    socialLinks: SocialLink[];
-};
-
+// ✅ CORRECT - Single object argument with inline type
 const actions = app.createActions({
-    addParticipant: async (args: AddParticipantArgs) => {
+    addParticipant: async (args: { name: string; socialLinks: SocialLink[] }) => {
         // Implementation
         return newParticipant.id;
     }
@@ -155,32 +170,47 @@ const actions = app.createActions({
 });
 ```
 
-### Calling Actions from Components
+### Using Actions in Components
 
-Actions are passed down as props and called with an object:
+Import the inferred `Actions` type and use `Pick` to select only needed actions:
+
+```typescript
+// In component file
+import type { Actions } from '../index';
+
+type BackstagePageProps = {
+    participants: Participant[];
+    currentPerformerId: string | null;
+    actions: Pick<Actions, 'updateParticipant' | 'removeParticipant' | 'setCurrentPerformer'>;
+};
+
+export function BackstagePage({ participants, currentPerformerId, actions }: BackstagePageProps) {
+    // Use actions
+    await actions.updateParticipant({
+        id: editingId,
+        name: editName,
+        socialLinks: editLinks,
+    });
+}
+```
+
+### Passing Actions from Routes
+
+Pass the entire actions object (or subset) as a single prop:
 
 ```typescript
 // In route
 app.registerRoute('/backstage', {}, () => {
+    const participants = states.peopleQueue.useState();
+    const currentPerformerId = states.currentPerformerId.useState();
+
     return (
         <BackstagePage
-            onUpdateParticipant={actions.updateParticipant}
-            onRemoveParticipant={actions.removeParticipant}
+            participants={participants}
+            currentPerformerId={currentPerformerId}
+            actions={actions}  // Pass all actions as one prop
         />
     );
-});
-
-// In component
-type BackstagePageProps = {
-    onUpdateParticipant: (args: { id: string; name: string; socialLinks: SocialLink[] }) => Promise<void>;
-    onRemoveParticipant: (args: { id: string }) => Promise<void>;
-};
-
-// Calling the action
-await onUpdateParticipant({
-    id: editingId,
-    name: editName,
-    socialLinks: editLinks,
 });
 ```
 
@@ -316,13 +346,15 @@ const handleMoveUp = (id: string) => {
 
 ## Key Rules Summary
 
-1. ✅ Create server states with `app.createStates()`
-2. ✅ Access state in routes with `.useState()` hook
-3. ✅ Modify server state ONLY in server actions
-4. ✅ Actions take exactly ONE argument (an object)
-5. ✅ Actions are async and can return values
-6. ✅ Use `setStateImmer()` for complex mutations
-7. ✅ Use `setState()` for simple replacements
-8. ✅ User agent state is modified directly (not in actions)
-9. ✅ Pass actions down as props to components
-10. ✅ Call actions with object arguments: `action({ key: value })`
+1. ✅ Create resources in a `createResources` function that returns `{ states, actions, userAgentState }`
+2. ✅ Export inferred types: `export type Actions = Awaited<ReturnType<typeof createResources>>['actions']`
+3. ✅ Access state in routes with `.useState()` hook
+4. ✅ Modify server state ONLY in server actions
+5. ✅ Actions take exactly ONE argument (an inline object type)
+6. ✅ Actions are async and can return values
+7. ✅ Use `setStateImmer()` for complex mutations
+8. ✅ Use `setState()` for simple replacements
+9. ✅ User agent state is modified directly (not in actions)
+10. ✅ Pass actions as a single prop to components
+11. ✅ Use `Pick<Actions, 'action1' | 'action2'>` to type action props
+12. ✅ Import action types with `import type { Actions } from '../index'`

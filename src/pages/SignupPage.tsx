@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { SocialLink } from '../types';
 import { SocialLinksEditor } from '../components/SocialLinksEditor';
-
-export type SignupPageActions = {
-    addParticipant: (args: { name: string; socialLinks: SocialLink[] }) => Promise<string>;
-};
+import type { Actions } from '../index';
 
 type SignupPageProps = {
-    actions: SignupPageActions;
+    actions: Pick<Actions, 'addParticipant'>;
     onSetMyParticipantId: (id: string | null) => void;
     myParticipantId: string | null;
 };

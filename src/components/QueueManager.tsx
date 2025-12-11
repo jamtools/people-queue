@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Participant, SocialLink } from '../types';
+import { Participant } from '../types';
 import { SocialLinksEditor } from './SocialLinksEditor';
-import { BackstagePageActions } from '../pages/BackstagePage';
+import type { Actions } from '../index';
 
 type QueueManagerProps = {
     participants: Participant[];
     currentPerformerId: string | null;
-    actions: BackstagePageActions;
+    actions: Pick<Actions, 'updateParticipant' | 'reorderParticipants' | 'removeParticipant' | 'setCurrentPerformer'>;
 };
 
 export function QueueManager({

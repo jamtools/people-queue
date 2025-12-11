@@ -1,19 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { Participant, SocialLink } from '../types';
+import { Participant } from '../types';
 import { QueueManager } from '../components/QueueManager';
-
-export type BackstagePageActions = {
-    updateParticipant: (args: { id: string; name: string; socialLinks: SocialLink[] }) => Promise<void>;
-    reorderParticipants: (args: { participants: Participant[] }) => Promise<void>;
-    removeParticipant: (args: { id: string }) => Promise<void>;
-    setCurrentPerformer: (args: { id: string | null }) => Promise<void>;
-};
+import type { Actions } from '../index';
 
 type BackstagePageProps = {
     participants: Participant[];
     currentPerformerId: string | null;
-    actions: BackstagePageActions;
+    actions: Pick<Actions, 'updateParticipant' | 'reorderParticipants' | 'removeParticipant' | 'setCurrentPerformer'>;
 };
 
 export function BackstagePage({

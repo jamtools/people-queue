@@ -1,35 +1,12 @@
 import React from 'react';
 import springboard from 'springboard';
 import { Participant, SocialLink } from './types';
-import { SignupPage, SignupPageActions } from './pages/SignupPage';
-import { BackstagePage, BackstagePageActions } from './pages/BackstagePage';
+import { SignupPage } from './pages/SignupPage';
+import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
 
-type AddParticipantArgs = {
-    name: string;
-    socialLinks: SocialLink[];
-};
-
-type UpdateParticipantArgs = {
-    id: string;
-    name: string;
-    socialLinks: SocialLink[];
-};
-
-type ReorderParticipantsArgs = {
-    participants: Participant[];
-};
-
-type RemoveParticipantArgs = {
-    id: string;
-};
-
-type SetCurrentPerformerArgs = {
-    id: string | null;
-};
-
-springboard.registerModule('open-mic-queue', {}, async (app) => {
+async function createResources(app: typeof springboard.modules[string]) {
     const states = await app.createStates({
         peopleQueue: [] as Participant[],
         currentPerformerId: null as string | null,
@@ -40,7 +17,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
     });
 
     const actions = app.createActions({
-        addParticipant: async (args: AddParticipantArgs) => {
+        addParticipant: async (args: { name: string; socialLinks: SocialLink[] }) => {
             const newParticipant: Participant = {
                 id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 name: args.name,
@@ -55,7 +32,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
             return newParticipant.id;
         },
 
-        updateParticipant: async (args: UpdateParticipantArgs) => {
+        updateParticipant: async (args: { id: string; name: string; socialLinks: SocialLink[] }) => {
             states.peopleQueue.setStateImmer(queue => {
                 const participant = queue.find(p => p.id === args.id);
                 if (participant) {
@@ -65,13 +42,13 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
             });
         },
 
-        reorderParticipants: async (args: ReorderParticipantsArgs) => {
+        reorderParticipants: async (args: { participants: Participant[] }) => {
             states.peopleQueue.setState(
                 args.participants.map((p, index) => ({ ...p, order: index }))
             );
         },
 
-        removeParticipant: async (args: RemoveParticipantArgs) => {
+        removeParticipant: async (args: { id: string }) => {
             states.peopleQueue.setStateImmer(queue => {
                 const index = queue.findIndex(p => p.id === args.id);
                 if (index !== -1) {
@@ -87,10 +64,18 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
             }
         },
 
-        setCurrentPerformer: async (args: SetCurrentPerformerArgs) => {
+        setCurrentPerformer: async (args: { id: string | null }) => {
             states.currentPerformerId.setState(args.id);
         },
-    } satisfies SignupPageActions & BackstagePageActions);
+    });
+
+    return { states, actions, userAgentState };
+}
+
+export type Actions = Awaited<ReturnType<typeof createResources>>['actions'];
+
+springboard.registerModule('open-mic-queue', {}, async (app) => {
+    const { states, actions, userAgentState } = await createResources(app);
 
     app.registerRoute('/', {}, () => {
         const participants = states.peopleQueue.useState();

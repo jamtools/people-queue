@@ -1,20 +1,24 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { Participant } from '../types';
+import { Participant, SocialLink } from '../types';
 import { QueueManager } from '../components/QueueManager';
 
 type BackstagePageProps = {
     participants: Participant[];
-    onUpdateParticipants: (participants: Participant[]) => void;
-    onSetCurrentPerformer: (id: string | null) => void;
     currentPerformerId: string | null;
+    onUpdateParticipant: (args: { id: string; name: string; socialLinks: SocialLink[] }) => Promise<void>;
+    onReorderParticipants: (args: { participants: Participant[] }) => Promise<void>;
+    onRemoveParticipant: (args: { id: string }) => Promise<void>;
+    onSetCurrentPerformer: (args: { id: string | null }) => Promise<void>;
 };
 
 export function BackstagePage({
     participants,
-    onUpdateParticipants,
+    currentPerformerId,
+    onUpdateParticipant,
+    onReorderParticipants,
+    onRemoveParticipant,
     onSetCurrentPerformer,
-    currentPerformerId
 }: BackstagePageProps) {
     const navigate = useNavigate();
     const currentPerformer = participants.find(p => p.id === currentPerformerId);
@@ -87,9 +91,11 @@ export function BackstagePage({
 
             <QueueManager
                 participants={participants}
-                onUpdateParticipants={onUpdateParticipants}
-                onSetCurrentPerformer={onSetCurrentPerformer}
                 currentPerformerId={currentPerformerId}
+                onUpdateParticipant={onUpdateParticipant}
+                onReorderParticipants={onReorderParticipants}
+                onRemoveParticipant={onRemoveParticipant}
+                onSetCurrentPerformer={onSetCurrentPerformer}
             />
         </div>
     );

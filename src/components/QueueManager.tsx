@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { Participant } from '../types';
+import { Participant, SocialLink } from '../types';
 import { SocialLinksEditor } from './SocialLinksEditor';
 
 type QueueManagerProps = {
     participants: Participant[];
-    onUpdateParticipants: (participants: Participant[]) => void;
-    onSetCurrentPerformer: (id: string | null) => void;
     currentPerformerId: string | null;
+    onUpdateParticipant: (args: { id: string; name: string; socialLinks: SocialLink[] }) => Promise<void>;
+    onReorderParticipants: (args: { participants: Participant[] }) => Promise<void>;
+    onRemoveParticipant: (args: { id: string }) => Promise<void>;
+    onSetCurrentPerformer: (args: { id: string | null }) => Promise<void>;
 };
 
-export function QueueManager({ participants, onUpdateParticipants, onSetCurrentPerformer, currentPerformerId }: QueueManagerProps) {
+export function QueueManager({
+    participants,
+    currentPerformerId,
+    onUpdateParticipant,
+    onReorderParticipants,
+    onRemoveParticipant,
+    onSetCurrentPerformer
+}: QueueManagerProps) {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const [editLinks, setEditLinks] = useState(participants.find(p => p.id === editingId)?.socialLinks || []);
@@ -19,7 +28,7 @@ export function QueueManager({ participants, onUpdateParticipants, onSetCurrentP
         if (index > 0) {
             const newParticipants = [...participants];
             [newParticipants[index - 1], newParticipants[index]] = [newParticipants[index], newParticipants[index - 1]];
-            onUpdateParticipants(newParticipants.map((p, i) => ({ ...p, order: i })));
+            onReorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
         }
     };
 
@@ -28,17 +37,13 @@ export function QueueManager({ participants, onUpdateParticipants, onSetCurrentP
         if (index < participants.length - 1) {
             const newParticipants = [...participants];
             [newParticipants[index], newParticipants[index + 1]] = [newParticipants[index + 1], newParticipants[index]];
-            onUpdateParticipants(newParticipants.map((p, i) => ({ ...p, order: i })));
+            onReorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
         }
     };
 
     const handleDelete = (id: string) => {
         if (confirm('Remove this participant from the queue?')) {
-            const newParticipants = participants.filter(p => p.id !== id).map((p, i) => ({ ...p, order: i }));
-            onUpdateParticipants(newParticipants);
-            if (currentPerformerId === id) {
-                onSetCurrentPerformer(null);
-            }
+            onRemoveParticipant({ id });
         }
     };
 
@@ -50,10 +55,11 @@ export function QueueManager({ participants, onUpdateParticipants, onSetCurrentP
 
     const handleSaveEdit = () => {
         if (editingId) {
-            const newParticipants = participants.map(p =>
-                p.id === editingId ? { ...p, name: editName, socialLinks: editLinks } : p
-            );
-            onUpdateParticipants(newParticipants);
+            onUpdateParticipant({
+                id: editingId,
+                name: editName,
+                socialLinks: editLinks,
+            });
             setEditingId(null);
         }
     };
@@ -175,7 +181,7 @@ export function QueueManager({ participants, onUpdateParticipants, onSetCurrentP
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                     {currentPerformerId === participant.id ? (
                                         <button
-                                            onClick={() => onSetCurrentPerformer(null)}
+                                            onClick={() => onSetCurrentPerformer({ id: null })}
                                             style={{
                                                 padding: '8px 16px',
                                                 backgroundColor: '#f44336',
@@ -189,7 +195,7 @@ export function QueueManager({ participants, onUpdateParticipants, onSetCurrentP
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => onSetCurrentPerformer(participant.id)}
+                                            onClick={() => onSetCurrentPerformer({ id: participant.id })}
                                             style={{
                                                 padding: '8px 16px',
                                                 backgroundColor: '#4caf50',

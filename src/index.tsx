@@ -1,48 +1,130 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import springboard from 'springboard';
-import { store } from './store';
-import { Participant } from './types';
+import { Participant, SocialLink } from './types';
 import { SignupPage } from './pages/SignupPage';
 import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
 
-function useStore() {
-    const [, forceUpdate] = useState({});
+type AddParticipantArgs = {
+    name: string;
+    socialLinks: SocialLink[];
+};
 
-    useEffect(() => {
-        return store.subscribe(() => forceUpdate({}));
-    }, []);
+type UpdateParticipantArgs = {
+    id: string;
+    name: string;
+    socialLinks: SocialLink[];
+};
 
-    return {
-        participants: store.getParticipants(),
-        currentPerformerId: store.getCurrentPerformerId(),
-        addParticipant: (p: Participant) => store.addParticipant(p),
-        updateParticipants: (ps: Participant[]) => store.updateParticipants(ps),
-        setCurrentPerformer: (id: string | null) => store.setCurrentPerformer(id),
-    };
-}
+type ReorderParticipantsArgs = {
+    participants: Participant[];
+};
+
+type RemoveParticipantArgs = {
+    id: string;
+};
+
+type SetCurrentPerformerArgs = {
+    id: string | null;
+};
 
 springboard.registerModule('open-mic-queue', {}, async (app) => {
+    const states = await app.createStates({
+        peopleQueue: [] as Participant[],
+        currentPerformerId: null as string | null,
+    });
+
+    const userAgentState = await app.createUserAgentState({
+        myParticipantId: null as string | null,
+    });
+
+    const actions = app.createActions({
+        addParticipant: async (args: AddParticipantArgs) => {
+            const newParticipant: Participant = {
+                id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                name: args.name,
+                socialLinks: args.socialLinks,
+                order: states.peopleQueue.getState().length,
+            };
+
+            states.peopleQueue.setStateImmer(queue => {
+                queue.push(newParticipant);
+            });
+
+            return newParticipant.id;
+        },
+
+        updateParticipant: async (args: UpdateParticipantArgs) => {
+            states.peopleQueue.setStateImmer(queue => {
+                const participant = queue.find(p => p.id === args.id);
+                if (participant) {
+                    participant.name = args.name;
+                    participant.socialLinks = args.socialLinks;
+                }
+            });
+        },
+
+        reorderParticipants: async (args: ReorderParticipantsArgs) => {
+            states.peopleQueue.setState(
+                args.participants.map((p, index) => ({ ...p, order: index }))
+            );
+        },
+
+        removeParticipant: async (args: RemoveParticipantArgs) => {
+            states.peopleQueue.setStateImmer(queue => {
+                const index = queue.findIndex(p => p.id === args.id);
+                if (index !== -1) {
+                    queue.splice(index, 1);
+                    queue.forEach((p, i) => {
+                        p.order = i;
+                    });
+                }
+            });
+
+            if (states.currentPerformerId.getState() === args.id) {
+                states.currentPerformerId.setState(null);
+            }
+        },
+
+        setCurrentPerformer: async (args: SetCurrentPerformerArgs) => {
+            states.currentPerformerId.setState(args.id);
+        },
+    });
+
     app.registerRoute('/', {}, () => {
-        const { participants, addParticipant } = useStore();
-        return <SignupPage onAddParticipant={addParticipant} />;
+        const participants = states.peopleQueue.useState();
+        const myParticipantId = userAgentState.myParticipantId.useState();
+
+        return (
+            <SignupPage
+                onAddParticipant={actions.addParticipant}
+                onSetMyParticipantId={(id) => userAgentState.myParticipantId.setState(id)}
+                myParticipantId={myParticipantId}
+            />
+        );
     });
 
     app.registerRoute('/backstage', {}, () => {
-        const { participants, currentPerformerId, updateParticipants, setCurrentPerformer } = useStore();
+        const participants = states.peopleQueue.useState();
+        const currentPerformerId = states.currentPerformerId.useState();
+
         return (
             <BackstagePage
                 participants={participants}
-                onUpdateParticipants={updateParticipants}
-                onSetCurrentPerformer={setCurrentPerformer}
                 currentPerformerId={currentPerformerId}
+                onUpdateParticipant={actions.updateParticipant}
+                onReorderParticipants={actions.reorderParticipants}
+                onRemoveParticipant={actions.removeParticipant}
+                onSetCurrentPerformer={actions.setCurrentPerformer}
             />
         );
     });
 
     app.registerRoute('/display', {}, () => {
-        const { participants, currentPerformerId } = useStore();
+        const participants = states.peopleQueue.useState();
+        const currentPerformerId = states.currentPerformerId.useState();
+
         return (
             <DisplayPage
                 participants={participants}
@@ -52,7 +134,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
     });
 
     app.registerRoute('/performer/:performerId', {}, () => {
-        const { participants } = useStore();
+        const participants = states.peopleQueue.useState();
         return <PerformerProfilePage participants={participants} />;
     });
 

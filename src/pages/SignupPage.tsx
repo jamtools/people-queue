@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { SocialLink, Participant } from '../types';
+import { SocialLink } from '../types';
 import { SocialLinksEditor } from '../components/SocialLinksEditor';
-import { generateParticipantId } from '../utils/socialLinks';
 
 type SignupPageProps = {
-    onAddParticipant: (participant: Participant) => void;
+    onAddParticipant: (args: { name: string; socialLinks: SocialLink[] }) => Promise<string>;
+    onSetMyParticipantId: (id: string | null) => void;
+    myParticipantId: string | null;
 };
 
-export function SignupPage({ onAddParticipant }: SignupPageProps) {
+export function SignupPage({ onAddParticipant, onSetMyParticipantId, myParticipantId }: SignupPageProps) {
     const [name, setName] = useState('');
     const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!name.trim()) {
@@ -21,14 +22,12 @@ export function SignupPage({ onAddParticipant }: SignupPageProps) {
             return;
         }
 
-        const participant: Participant = {
-            id: generateParticipantId(),
+        const participantId = await onAddParticipant({
             name: name.trim(),
             socialLinks,
-            order: 0,
-        };
+        });
 
-        onAddParticipant(participant);
+        onSetMyParticipantId(participantId);
         setName('');
         setSocialLinks([]);
         alert('Successfully added to the queue!');

@@ -21,7 +21,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
         const url = `${origin}/performer/${currentPerformer.id}`;
 
         QRCode.toCanvas(canvasRef.current, url, {
-            width: 256,
+            width: 512,
             margin: 2,
             color: {
                 dark: '#000000',
@@ -67,9 +67,6 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
             </div>
         );
     }
-
-    const origin = window.location.origin.replace('localhost', 'jam.local');
-    const performerUrl = `${origin}/performer/${currentPerformer.id}`;
 
     return (
         <div style={{
@@ -119,9 +116,10 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     backgroundColor: '#fff',
                     padding: '48px',
                     borderRadius: '16px',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    maxWidth: '90vw'
                 }}>
-                    <div style={{ marginBottom: '24px' }}>
+                    <div style={{ marginBottom: '32px' }}>
                         <canvas
                             ref={canvasRef}
                             style={{
@@ -132,11 +130,46 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                             }}
                         />
                     </div>
-                    <div style={{ color: '#000', fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>
-                        Scan for Social Links
+                    <div style={{ color: '#000', fontSize: '28px', fontWeight: 'bold', marginBottom: '32px' }}>
+                        Connect with {currentPerformer.name}
                     </div>
-                    <div style={{ color: '#666', fontSize: '18px' }}>
-                        {performerUrl}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '24px',
+                        justifyContent: 'center'
+                    }}>
+                        {currentPerformer.socialLinks
+                            .sort((a, b) => a.order - b.order)
+                            .map((link) => {
+                                const Icon = getPlatformIcon(link.type);
+                                return (
+                                    <div
+                                        key={link.id}
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            padding: '24px',
+                                            backgroundColor: '#f8f9fa',
+                                            borderRadius: '12px',
+                                            border: '2px solid #e9ecef'
+                                        }}
+                                    >
+                                        <Icon size={48} color="#333" strokeWidth={1.5} />
+                                        <div style={{
+                                            color: '#333',
+                                            fontSize: '20px',
+                                            fontWeight: '600',
+                                            wordBreak: 'break-all',
+                                            textAlign: 'center'
+                                        }}>
+                                            {link.url}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
             )}

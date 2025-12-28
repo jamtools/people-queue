@@ -86,7 +86,7 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="What will you be performing? (optional)"
+                        placeholder="What instruments/style will you be performing? (optional)"
                         rows={4}
                         style={{
                             width: '100%',

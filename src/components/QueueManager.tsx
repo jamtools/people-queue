@@ -111,7 +111,7 @@ function SortableItem({
                             <textarea
                                 value={editDescription}
                                 onChange={(e) => onSetEditDescription(e.target.value)}
-                                placeholder="What will you be performing? (optional)"
+                                placeholder="What instruments/style will you be performing? (optional)"
                                 rows={4}
                                 style={{
                                     width: '100%',
@@ -190,15 +190,21 @@ function SortableItem({
                                         {index + 1}. {participant.name}
                                     </div>
                                     {participant.description && (
-                                        <div style={{
-                                            fontSize: '14px',
-                                            color: '#666',
-                                            marginBottom: '4px',
-                                            fontStyle: 'italic',
-                                            wordWrap: 'break-word',
-                                            overflowWrap: 'break-word'
-                                        }}>
-                                            {participant.description}
+                                        <div
+                                            style={{
+                                                fontSize: '12px',
+                                                color: '#999',
+                                                marginBottom: '4px',
+                                                fontStyle: 'italic',
+                                                wordWrap: 'break-word',
+                                                overflowWrap: 'break-word'
+                                            }}
+                                            title={participant.description.length > 120 ? participant.description : undefined}
+                                        >
+                                            {participant.description.length > 120
+                                                ? participant.description.substring(0, 120) + '...'
+                                                : participant.description
+                                            }
                                         </div>
                                     )}
                                     {participant.socialLinks.length > 0 && (
@@ -252,7 +258,9 @@ function SortableItem({
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        onSetCurrentPerformer(null);
+                                        if (confirm('End the current performance?')) {
+                                            onSetCurrentPerformer(null);
+                                        }
                                     }}
                                     style={{
                                         padding: '8px 16px',

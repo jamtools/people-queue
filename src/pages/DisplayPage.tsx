@@ -17,7 +17,8 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
     useEffect(() => {
         if (!currentPerformer || !canvasRef.current) return;
 
-        const url = `${window.location.origin}/performer/${currentPerformer.id}`;
+        const origin = window.location.origin.replace('localhost', 'jam.local');
+        const url = `${origin}/performer/${currentPerformer.id}`;
 
         QRCode.toCanvas(canvasRef.current, url, {
             width: 256,
@@ -67,7 +68,8 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
         );
     }
 
-    const performerUrl = `${window.location.origin}/performer/${currentPerformer.id}`;
+    const origin = window.location.origin.replace('localhost', 'jam.local');
+    const performerUrl = `${origin}/performer/${currentPerformer.id}`;
 
     return (
         <div style={{

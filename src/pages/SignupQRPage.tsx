@@ -9,7 +9,8 @@ export function SignupQRPage() {
     useEffect(() => {
         if (!canvasRef.current) return;
 
-        const url = `${window.location.origin}/`;
+        const origin = window.location.origin.replace('localhost', 'jam.local');
+        const url = `${origin}/`;
 
         QRCode.toCanvas(canvasRef.current, url, {
             width: 512,
@@ -23,7 +24,8 @@ export function SignupQRPage() {
         });
     }, []);
 
-    const signupUrl = `${window.location.origin}/`;
+    const origin = window.location.origin.replace('localhost', 'jam.local');
+    const signupUrl = `${origin}/`;
 
     return (
         <div style={{

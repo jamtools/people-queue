@@ -22,7 +22,7 @@ export function BackstagePage({
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h1>Backstage - Queue Management</h1>
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     {currentPerformer && (
                         <button
                             onClick={() => navigate('/display')}
@@ -33,8 +33,12 @@ export function BackstagePage({
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '4px',
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                fontWeight: '500',
+                                transition: 'all 0.2s ease'
                             }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
                         >
                             View Display
                         </button>
@@ -48,8 +52,12 @@ export function BackstagePage({
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            transition: 'all 0.2s ease'
                         }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#666'}
                     >
                         Signup Page
                     </button>

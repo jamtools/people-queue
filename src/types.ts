@@ -10,6 +10,7 @@ export type SocialLink = {
 export type Participant = {
     id: string;
     name: string;
+    description?: string;
     socialLinks: SocialLink[];
     order: number;
     isCurrentlyPerforming?: boolean;

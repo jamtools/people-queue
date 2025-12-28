@@ -12,6 +12,7 @@ type SignupPageProps = {
 
 export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: SignupPageProps) {
     const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
     const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
     const [editingId, setEditingId] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -26,11 +27,13 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
 
         const result = await actions.addParticipant({
             name: name.trim(),
+            description: description.trim() || undefined,
             socialLinks,
         });
 
         onAddMyParticipantId(result.id);
         setName('');
+        setDescription('');
         setSocialLinks([]);
         alert('Successfully added to the queue!');
     };
@@ -41,6 +44,7 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
             await actions.updateParticipant({
                 id: participantId,
                 name: participant.name,
+                description: participant.description,
                 socialLinks: newLinks,
             });
         }
@@ -77,12 +81,33 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
 
                 <div style={{ marginBottom: '24px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                        Description
+                    </label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="What will you be performing? (optional)"
+                        rows={4}
+                        style={{
+                            width: '100%',
+                            padding: '12px',
+                            fontSize: '16px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            resize: 'vertical',
+                            fontFamily: 'inherit'
+                        }}
+                    />
+                </div>
+
+                <div style={{ marginBottom: '24px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
                         Social Media Links
                     </label>
                     <SocialLinksEditor links={socialLinks} onChange={setSocialLinks} />
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                     <button
                         type="submit"
                         style={{
@@ -92,8 +117,12 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            fontWeight: '500'
                         }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
                     >
                         Add to Queue
                     </button>
@@ -107,8 +136,12 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            fontWeight: '500'
                         }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#666'}
                     >
                         Backstage
                     </button>
@@ -132,7 +165,12 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                                 backgroundColor: '#f9f9f9'
                             }}
                         >
-                            <h3 style={{ marginTop: 0, marginBottom: '12px' }}>{participant.name}</h3>
+                            <h3 style={{ marginTop: 0, marginBottom: '8px' }}>{participant.name}</h3>
+                            {participant.description && (
+                                <p style={{ color: '#666', marginTop: 0, marginBottom: '12px', fontStyle: 'italic' }}>
+                                    {participant.description}
+                                </p>
+                            )}
                             <div style={{ marginBottom: '8px' }}>
                                 <strong>Social Links:</strong>
                             </div>
@@ -153,8 +191,12 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                                             color: 'white',
                                             border: 'none',
                                             borderRadius: '4px',
-                                            cursor: 'pointer'
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            fontWeight: '500'
                                         }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
                                     >
                                         Done Editing
                                     </button>
@@ -183,8 +225,12 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                                             color: 'white',
                                             border: 'none',
                                             borderRadius: '4px',
-                                            cursor: 'pointer'
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            fontWeight: '500'
                                         }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#666'}
                                     >
                                         Edit Links
                                     </button>

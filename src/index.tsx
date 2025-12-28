@@ -2,6 +2,7 @@ import React from 'react';
 import springboard from 'springboard';
 import { Participant, SocialLink } from './types';
 import { SignupPage } from './pages/SignupPage';
+import { SignupQRPage } from './pages/SignupQRPage';
 import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
@@ -16,10 +17,11 @@ async function createResources(app: ModuleAPI) {
     const myParticipantIdsState = await app.statesAPI.createUserAgentState('myParticipantIds', [] as string[]);
 
     const actions = app.createActions({
-        addParticipant: async (args: { name: string; socialLinks: SocialLink[] }) => {
+        addParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[] }) => {
             const newParticipant: Participant = {
                 id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 name: args.name,
+                description: args.description,
                 socialLinks: args.socialLinks,
                 order: states.peopleQueue.getState().length,
             };
@@ -31,11 +33,12 @@ async function createResources(app: ModuleAPI) {
             return { id: newParticipant.id };
         },
 
-        updateParticipant: async (args: { id: string; name: string; socialLinks: SocialLink[] }) => {
+        updateParticipant: async (args: { id: string; name: string; description?: string; socialLinks: SocialLink[] }) => {
             states.peopleQueue.setStateImmer((queue: Participant[]) => {
                 const participant = queue.find((p: Participant) => p.id === args.id);
                 if (participant) {
                     participant.name = args.name;
+                    participant.description = args.description;
                     participant.socialLinks = args.socialLinks;
                 }
             });
@@ -91,6 +94,10 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
                 myParticipants={myParticipants}
             />
         );
+    });
+
+    app.registerRoute('/signup-qr', {}, () => {
+        return <SignupQRPage />;
     });
 
     app.registerRoute('/backstage', {}, () => {

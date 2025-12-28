@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
+import * as QRCode from 'qrcode';
 import { Participant } from '../types';
 import { buildSocialUrl, getPlatformIcon } from '../utils/socialLinks';
 
@@ -16,38 +17,18 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
     useEffect(() => {
         if (!currentPerformer || !canvasRef.current) return;
 
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
         const url = `${window.location.origin}/performer/${currentPerformer.id}`;
 
-        const size = 256;
-        const moduleSize = 8;
-        const modules = size / moduleSize;
-
-        canvas.width = size;
-        canvas.height = size;
-
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, size, size);
-
-        ctx.fillStyle = 'black';
-        const data = url.split('').map(c => c.charCodeAt(0));
-
-        for (let y = 0; y < modules; y++) {
-            for (let x = 0; x < modules; x++) {
-                const index = (y * modules + x) % data.length;
-                if (data[index] % 2 === 0) {
-                    ctx.fillRect(x * moduleSize, y * moduleSize, moduleSize, moduleSize);
-                }
+        QRCode.toCanvas(canvasRef.current, url, {
+            width: 256,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#FFFFFF'
             }
-        }
-
-        const quietZone = moduleSize * 2;
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = moduleSize;
-        ctx.strokeRect(quietZone, quietZone, size - quietZone * 2, size - quietZone * 2);
+        }).catch(err => {
+            console.error('QR Code generation failed:', err);
+        });
     }, [currentPerformer]);
 
     if (!currentPerformer) {
@@ -73,8 +54,12 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        fontWeight: '500',
+                        transition: 'all 0.2s ease'
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
                 >
                     Go to Backstage
                 </button>
@@ -97,14 +82,34 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
         }}>
             <div style={{
                 textAlign: 'center',
-                marginBottom: '48px'
+                marginBottom: '48px',
+                maxWidth: '90vw'
             }}>
-                <h1 style={{ fontSize: '64px', marginBottom: '16px' }}>
+                <h1 style={{ fontSize: 'clamp(32px, 8vw, 64px)', marginBottom: '16px' }}>
                     Now Performing
                 </h1>
-                <div style={{ fontSize: '48px', fontWeight: 'bold' }}>
+                <div style={{
+                    fontSize: 'clamp(28px, 6vw, 48px)',
+                    fontWeight: 'bold',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    hyphens: 'auto'
+                }}>
                     {currentPerformer.name}
                 </div>
+                {currentPerformer.description && (
+                    <div style={{
+                        fontSize: 'clamp(18px, 3.5vw, 28px)',
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        marginTop: '16px',
+                        fontStyle: 'italic',
+                        wordWrap: 'break-word',
+                        overflowWrap: 'break-word',
+                        hyphens: 'auto'
+                    }}>
+                        {currentPerformer.description}
+                    </div>
+                )}
             </div>
 
             {currentPerformer.socialLinks.length > 0 && (
@@ -146,8 +151,12 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    fontWeight: '500',
+                    transition: 'all 0.2s ease'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#666'}
             >
                 Back to Backstage
             </button>

@@ -71,6 +71,16 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     }}>
                         {performer.name}
                     </h1>
+                    {performer.description && (
+                        <p style={{
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            fontSize: '18px',
+                            margin: '0 0 16px 0',
+                            fontStyle: 'italic'
+                        }}>
+                            {performer.description}
+                        </p>
+                    )}
                     <p style={{
                         color: 'rgba(255, 255, 255, 0.9)',
                         fontSize: '18px',

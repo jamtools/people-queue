@@ -49,21 +49,6 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     textAlign: 'center',
                     marginBottom: '32px'
                 }}>
-                    <div style={{
-                        width: '120px',
-                        height: '120px',
-                        borderRadius: '50%',
-                        backgroundColor: '#fff',
-                        margin: '0 auto 16px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '48px',
-                        fontWeight: 'bold',
-                        color: '#667eea'
-                    }}>
-                        {performer.name.charAt(0).toUpperCase()}
-                    </div>
                     <h1 style={{
                         color: '#fff',
                         fontSize: '36px',
@@ -81,13 +66,6 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                             {performer.description}
                         </p>
                     )}
-                    <p style={{
-                        color: 'rgba(255, 255, 255, 0.9)',
-                        fontSize: '18px',
-                        margin: 0
-                    }}>
-                        Thanks for watching! Connect with me:
-                    </p>
                 </div>
 
                 <div style={{
@@ -142,7 +120,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                 >
                                     <Icon size={32} />
                                     <span style={{ flex: 1 }}>
-                                        {link.type.charAt(0).toUpperCase() + link.type.slice(1)}
+                                        {link.url}
                                     </span>
                                     <span style={{ fontSize: '20px', color: '#999' }}>→</span>
                                 </a>

@@ -2,17 +2,18 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import * as QRCode from 'qrcode';
 
-export function SignupQRPage() {
+type SignupQRPageProps = {
+    googleFormUrl: string;
+};
+
+export function SignupQRPage({ googleFormUrl }: SignupQRPageProps) {
     const navigate = useNavigate();
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (!canvasRef.current) return;
+        if (!canvasRef.current || !googleFormUrl) return;
 
-        const origin = window.location.origin.replace('localhost', 'jam.local');
-        const url = `${origin}/`;
-
-        QRCode.toCanvas(canvasRef.current, url, {
+        QRCode.toCanvas(canvasRef.current, googleFormUrl, {
             width: 512,
             margin: 2,
             color: {
@@ -22,10 +23,7 @@ export function SignupQRPage() {
         }).catch(err => {
             console.error('QR Code generation failed:', err);
         });
-    }, []);
-
-    const origin = window.location.origin.replace('localhost', 'jam.local');
-    const signupUrl = `${origin}/`;
+    }, [googleFormUrl]);
 
     return (
         <div style={{
@@ -35,39 +33,8 @@ export function SignupQRPage() {
             justifyContent: 'center',
             minHeight: '100vh',
             backgroundColor: '#f5f5f5',
-            padding: '40px',
-            position: 'relative'
+            padding: '40px'
         }}>
-            {/* Backstage button - subtle top-right corner */}
-            <button
-                onClick={() => navigate('/backstage')}
-                aria-label="Go to backstage queue management"
-                style={{
-                    position: 'fixed',
-                    top: '20px',
-                    right: '20px',
-                    padding: '10px 20px',
-                    fontSize: '14px',
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                    color: '#666',
-                    border: '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    fontWeight: '500'
-                }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.15)';
-                    e.currentTarget.style.color = '#333';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-                    e.currentTarget.style.color = '#666';
-                }}
-            >
-                Backstage
-            </button>
-
             {/* Main content container */}
             <div style={{
                 textAlign: 'center',
@@ -94,52 +61,70 @@ export function SignupQRPage() {
                     fontWeight: '400',
                     lineHeight: '1.4'
                 }}>
-                    Scan the QR code to add yourself to the queue
+                    Scan to Fill Out Signup Form
                 </p>
 
-                {/* QR Code container */}
-                <div style={{
-                    backgroundColor: '#ffffff',
-                    padding: '48px',
-                    borderRadius: '24px',
-                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
-                    marginBottom: '32px',
-                    display: 'inline-block'
-                }}>
-                    <canvas
-                        ref={canvasRef}
-                        style={{
-                            display: 'block',
+                {/* QR Code container or error message */}
+                {googleFormUrl ? (
+                    <>
+                        <div style={{
+                            backgroundColor: '#ffffff',
+                            padding: '48px',
+                            borderRadius: '24px',
+                            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
+                            marginBottom: '32px',
+                            display: 'inline-block'
+                        }}>
+                            <canvas
+                                ref={canvasRef}
+                                style={{
+                                    display: 'block',
+                                    margin: '0 auto',
+                                    borderRadius: '12px'
+                                }}
+                            />
+                        </div>
+
+                        {/* URL text for reference */}
+                        <div style={{
+                            fontSize: 'clamp(14px, 3vw, 24px)',
+                            color: '#999',
+                            fontWeight: '500',
+                            fontFamily: 'monospace',
+                            letterSpacing: '0.02em',
+                            marginBottom: '16px',
+                            wordBreak: 'break-all'
+                        }}>
+                            {googleFormUrl}
+                        </div>
+
+                        {/* Additional instructions */}
+                        <p style={{
+                            fontSize: 'clamp(16px, 2.5vw, 20px)',
+                            color: '#888',
+                            maxWidth: '600px',
                             margin: '0 auto',
-                            borderRadius: '12px'
-                        }}
-                    />
-                </div>
-
-                {/* URL text for reference */}
-                <div style={{
-                    fontSize: 'clamp(14px, 3vw, 24px)',
-                    color: '#999',
-                    fontWeight: '500',
-                    fontFamily: 'monospace',
-                    letterSpacing: '0.02em',
-                    marginBottom: '16px',
-                    wordBreak: 'break-all'
-                }}>
-                    {signupUrl}
-                </div>
-
-                {/* Additional instructions */}
-                <p style={{
-                    fontSize: 'clamp(16px, 2.5vw, 20px)',
-                    color: '#888',
-                    maxWidth: '600px',
-                    margin: '0 auto',
-                    lineHeight: '1.6',
-                    padding: '0 20px'
-                }}>
-                    Point your phone's camera at the QR code or enter the URL above to get started
-                </p>
+                            lineHeight: '1.6',
+                            padding: '0 20px'
+                        }}>
+                            Point your phone's camera at the QR code or enter the URL above to get started
+                        </p>
+                    </>
+                ) : (
+                    <div style={{
+                        backgroundColor: '#fff3cd',
+                        border: '2px solid #ffc107',
+                        padding: '32px',
+                        borderRadius: '12px',
+                        color: '#856404',
+                        fontSize: 'clamp(16px, 3vw, 24px)',
+                        fontWeight: '500',
+                        maxWidth: '600px',
+                        margin: '0 auto'
+                    }}>
+                        Google Form URL not configured. Please set it in Backstage.
+                    </div>
+                )}
             </div>
         </div>
     );

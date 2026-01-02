@@ -14,4 +14,7 @@ export type Participant = {
     socialLinks: SocialLink[];
     order: number;
     isCurrentlyPerforming?: boolean;
+    notes?: string;
+    source?: 'sheets' | 'manual';
+    sheetRowId?: number;
 };

@@ -174,27 +174,6 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                 </div>
             )}
 
-            <button
-                onClick={() => navigate('/backstage')}
-                style={{
-                    position: 'fixed',
-                    top: '20px',
-                    right: '20px',
-                    padding: '12px 24px',
-                    fontSize: '16px',
-                    backgroundColor: '#666',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontWeight: '500',
-                    transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#666'}
-            >
-                Back to Backstage
-            </button>
         </div>
     );
 }

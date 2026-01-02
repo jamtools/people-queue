@@ -20,9 +20,11 @@ type SortableItemProps = {
     editingId: string | null;
     editName: string;
     editDescription: string;
+    editNotes: string;
     editLinks: any[];
     onSetEditName: (name: string) => void;
     onSetEditDescription: (desc: string) => void;
+    onSetEditNotes: (notes: string) => void;
     onSetEditLinks: (links: any[]) => void;
     onSaveEdit: () => void;
     onCancelEdit: () => void;
@@ -41,9 +43,11 @@ function SortableItem({
     editingId,
     editName,
     editDescription,
+    editNotes,
     editLinks,
     onSetEditName,
     onSetEditDescription,
+    onSetEditNotes,
     onSetEditLinks,
     onSaveEdit,
     onCancelEdit,
@@ -120,6 +124,26 @@ function SortableItem({
                                     borderRadius: '4px',
                                     resize: 'vertical',
                                     fontFamily: 'inherit'
+                                }}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '12px' }}>
+                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
+                                Backstage Notes (Internal Only)
+                            </label>
+                            <textarea
+                                value={editNotes}
+                                onChange={(e) => onSetEditNotes(e.target.value)}
+                                placeholder="Notes for backstage use only..."
+                                rows={3}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '4px',
+                                    resize: 'vertical',
+                                    fontFamily: 'inherit',
+                                    backgroundColor: '#fffbf0'
                                 }}
                             />
                         </div>
@@ -205,6 +229,24 @@ function SortableItem({
                                                 ? participant.description.substring(0, 120) + '...'
                                                 : participant.description
                                             }
+                                        </div>
+                                    )}
+                                    {participant.notes && (
+                                        <div
+                                            style={{
+                                                fontSize: '11px',
+                                                color: '#cc8800',
+                                                marginBottom: '4px',
+                                                fontStyle: 'italic',
+                                                wordWrap: 'break-word',
+                                                overflowWrap: 'break-word',
+                                                backgroundColor: '#fffbf0',
+                                                padding: '4px 6px',
+                                                borderRadius: '4px',
+                                                border: '1px solid #ffe4a3'
+                                            }}
+                                        >
+                                            Backstage note: {participant.notes}
                                         </div>
                                     )}
                                     {participant.socialLinks.length > 0 && (
@@ -359,6 +401,7 @@ export function QueueManager({
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const [editDescription, setEditDescription] = useState('');
+    const [editNotes, setEditNotes] = useState('');
     const [editLinks, setEditLinks] = useState(participants.find(p => p.id === editingId)?.socialLinks || []);
 
     // Configure drag sensors to require minimum drag distance
@@ -414,6 +457,7 @@ export function QueueManager({
         setEditingId(participant.id);
         setEditName(participant.name);
         setEditDescription(participant.description || '');
+        setEditNotes(participant.notes || '');
         setEditLinks(participant.socialLinks);
     };
 
@@ -423,6 +467,7 @@ export function QueueManager({
                 id: editingId,
                 name: editName,
                 description: editDescription.trim() || undefined,
+                notes: editNotes.trim() || undefined,
                 socialLinks: editLinks,
             });
             setEditingId(null);
@@ -458,9 +503,11 @@ export function QueueManager({
                                 editingId={editingId}
                                 editName={editName}
                                 editDescription={editDescription}
+                                editNotes={editNotes}
                                 editLinks={editLinks}
                                 onSetEditName={setEditName}
                                 onSetEditDescription={setEditDescription}
+                                onSetEditNotes={setEditNotes}
                                 onSetEditLinks={setEditLinks}
                                 onSaveEdit={handleSaveEdit}
                                 onCancelEdit={handleCancelEdit}

@@ -76,8 +76,8 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
             justifyContent: 'center',
             minHeight: '100vh',
             padding: '40px',
-            backgroundColor: '#000',
-            color: '#fff'
+            backgroundColor: '#f5f5f5',
+            color: '#1a1a1a'
         }}>
             <div style={{
                 textAlign: 'center',
@@ -99,7 +99,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                 {currentPerformer.description && (
                     <div style={{
                         fontSize: 'clamp(18px, 3.5vw, 28px)',
-                        color: 'rgba(255, 255, 255, 0.8)',
+                        color: '#666',
                         marginTop: '16px',
                         fontStyle: 'italic',
                         wordWrap: 'break-word',
@@ -123,14 +123,14 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                         <canvas
                             ref={canvasRef}
                             style={{
-                                border: '8px solid #000',
+                                border: '8px solid #ddd',
                                 borderRadius: '8px',
                                 maxWidth: '100%',
                                 height: 'auto'
                             }}
                         />
                     </div>
-                    <div style={{ color: '#000', fontSize: '28px', fontWeight: 'bold', marginBottom: '32px' }}>
+                    <div style={{ color: '#1a1a1a', fontSize: '28px', fontWeight: 'bold', marginBottom: '32px' }}>
                         Connect with {currentPerformer.name}
                     </div>
                     <div style={{

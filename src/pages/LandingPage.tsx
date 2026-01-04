@@ -17,8 +17,8 @@ export function LandingPage({ participants, currentPerformerId }: LandingPagePro
             justifyContent: 'center',
             minHeight: '100vh',
             padding: '40px',
-            backgroundColor: '#000',
-            color: '#fff',
+            backgroundColor: '#f5f5f5',
+            color: '#1a1a1a',
             textAlign: 'center'
         }}>
             {currentPerformer ? (
@@ -45,7 +45,7 @@ export function LandingPage({ participants, currentPerformerId }: LandingPagePro
                     {currentPerformer.description && (
                         <div style={{
                             fontSize: 'clamp(18px, 3.5vw, 28px)',
-                            color: 'rgba(255, 255, 255, 0.8)',
+                            color: '#666',
                             marginTop: '16px',
                             fontStyle: 'italic',
                             wordWrap: 'break-word',
@@ -63,7 +63,7 @@ export function LandingPage({ participants, currentPerformerId }: LandingPagePro
                     <h1 style={{
                         fontSize: 'clamp(32px, 8vw, 64px)',
                         fontWeight: 'bold',
-                        color: 'rgba(255, 255, 255, 0.7)'
+                        color: '#999'
                     }}>
                         No one performing right now
                     </h1>

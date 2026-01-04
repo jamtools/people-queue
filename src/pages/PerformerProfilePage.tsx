@@ -35,7 +35,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
     return (
         <div style={{
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundColor: '#f5f5f5',
             padding: '40px 20px',
             display: 'flex',
             alignItems: 'center',
@@ -50,7 +50,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     marginBottom: '32px'
                 }}>
                     <h1 style={{
-                        color: '#fff',
+                        color: '#1a1a1a',
                         fontSize: '36px',
                         margin: '0 0 8px 0'
                     }}>
@@ -58,7 +58,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     </h1>
                     {performer.description && (
                         <p style={{
-                            color: 'rgba(255, 255, 255, 0.9)',
+                            color: '#666',
                             fontSize: '18px',
                             margin: '0 0 16px 0',
                             fontStyle: 'italic'

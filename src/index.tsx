@@ -8,7 +8,10 @@ import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
 import {ModuleAPI} from 'springboard/engine/module_api';
+
+// @platform "node"
 import { fetchParticipantsFromSheet } from './services/googleSheets';
+// @platform end
 
 async function createResources(app: ModuleAPI) {
     const states = await app.createStates({

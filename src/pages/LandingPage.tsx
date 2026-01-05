@@ -168,9 +168,9 @@ export function LandingPage({ participants, currentPerformerId }: LandingPagePro
                     <h1 style={{
                         fontSize: 'clamp(32px, 8vw, 64px)',
                         fontWeight: 'bold',
-                        color: '#999'
+                        color: '#4ecdc4'
                     }}>
-                        No one performing right now
+                        Welcome to the SongDrive Open Stage
                     </h1>
                 </div>
             )}

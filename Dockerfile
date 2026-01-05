@@ -15,6 +15,9 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
+# Replace the title in the HTML file
+RUN sed -i 's/<title>Jam Tools<\/title>/<title>People Queue<\/title>/' /app/node_modules/@springboardjs/platforms-browser/index.html
+
 # Build the application
 RUN pnpm build
 

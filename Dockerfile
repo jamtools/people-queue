@@ -29,8 +29,9 @@ RUN npm install -g pnpm
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile
+# Install dependencies
+RUN pnpm install --prod=false --frozen-lockfile
+RUN npm rebuild better-sqlite3
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist

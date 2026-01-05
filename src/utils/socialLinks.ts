@@ -27,7 +27,7 @@ const BandcampIcon = () => {
     );
 };
 
-export function getPlatformIcon(type: PlatformType): React.ComponentType<{ size?: number }> {
+export function getPlatformIcon(type: PlatformType) {
     switch (type) {
         case 'instagram':
             return IconBrandInstagram;

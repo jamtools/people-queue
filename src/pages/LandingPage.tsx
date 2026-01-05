@@ -15,7 +15,8 @@ export function LandingPage({ participants, currentPerformerId }: LandingPagePro
     useEffect(() => {
         if (!currentPerformer || !canvasRef.current) return;
 
-        const origin = window.location.origin.replace('localhost', 'jam.local');
+        const origin = window.location.origin;
+        // const origin = window.location.origin.replace('localhost', 'jam.local');
         const url = `${origin}/performer/${currentPerformer.id}`;
 
         QRCode.toCanvas(canvasRef.current, url, {

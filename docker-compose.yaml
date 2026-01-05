@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   people-queue:
     build:
@@ -8,6 +6,7 @@ services:
     ports:
       - "${APP_PORT:-1337}:1337"
     environment:
+      - PORT=1337
       - NODE_ENV=production
       - GOOGLE_SHEETS_CREDENTIALS=${GOOGLE_SHEETS_CREDENTIALS}
       - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}

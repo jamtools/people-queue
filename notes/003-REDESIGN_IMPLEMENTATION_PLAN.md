@@ -387,28 +387,74 @@ toggleHelpText: async (args: { enabled: boolean }) => { ... }
 
 ### Design Assets & Specifications
 1. **What are the exact HEX/RGB color values for the 5 brand colors?**
+
+White noise: #FFFFFF
+Midnight Cruise: #2D2C80
+Bridge Drop: #142A4C
+Melody Mist: #ABCED6
+Cloud Sync: #59A6DB
+
 2. **Do we have access to the actual mockup images** to measure font sizes precisely?
+
+attached to message
+
 3. **Do we have the SongDrive logo file?** What format and color variant?
+
+Copy /Users/mickmister/code/people-queue/_debug/cloud_gradient_logo.png into ./assets
+
 4. **What are the exact font sizes** for each variant? (Can we extract from mockups?)
+
+do your best to extract from mockups
 
 ### Screen & Display
 5. **What is the target projection screen resolution?** (1920x1080, 4K, other?)
+
+1080 kiosk tv
+
 6. **What breakpoint defines mobile vs desktop?** (768px, 1024px, other?)
+
+whatever mobile breakpoint usually is
+
 7. **Should fonts be fixed pixel sizes or responsive** (vw/clamp)?
+
+responsive I suppose
+note that the kiosk pages will only be displayed on the tv, and mobile pages will only be displayed on the phone
+so the individual pages don't need to cater to both screen sizes
 
 ### Routing & Navigation
 8. **What route should the Welcome Screen use?** (`/`, `/welcome`, other?)
+
+`/`
+
 9. **How is the Welcome Screen dismissed/navigated away from?** (Backstage control, timer, manual?)
+
+when a performer is playing, the root route should show the performer instead of the welcome screen
 
 ### Feature Behavior
 10. **What is the exact text for the "Need Help Uploading?" help message?**
+
+"Need Help Uploading?"
+
 11. **What should the QR description text say on the Display page?** ("Scan to connect", "View profile", other?)
+
+"Scan to connect"
+
 12. **How should we detect long vs short band names?** (Character count, text width measurement, manual toggle?)
+
+I trust your judgement on this
+
 13. **Should we enforce 3-link maximum via validation** or just UI design guidelines?
+
+yes enforce
 
 ### Technical Implementation
 14. **Does Springboard have preferences for font loading?** (`<link>` vs `@import` vs other?)
+
+it uses esbuild and @import should be fine in css file
+
 15. **Where should theme/style files be located?** Follow existing Springboard conventions?
+
+in src/styles
 
 ---
 

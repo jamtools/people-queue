@@ -96,7 +96,7 @@ export function BackstagePage({
             name: manualName.trim(),
             description: manualDescription.trim() || undefined,
             socialLinks: manualLinks,
-            addToQueue: true, // Add to queue by default when adding manually
+            addToQueue: false, // Don't add to queue automatically - must be done manually
         });
 
         // Clear form
@@ -435,7 +435,7 @@ export function BackstagePage({
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fb8c00'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffa726'}
                     >
-                        Add to Queue
+                        Add Participant
                     </button>
                 </div>
             </div>

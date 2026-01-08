@@ -156,6 +156,258 @@ export function BackstagePage({
                 </div>
             )}
 
+            <div style={{ marginBottom: '16px' }}>
+                <h2>Queue ({queuedParticipants.length})</h2>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                {queuedParticipants.length === 0 ? (
+                    <div style={{ padding: '24px', textAlign: 'center', color: '#666', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                        No participants in queue yet. Add people from the "All Signed Up" section below.
+                    </div>
+                ) : (
+                    queuedParticipants.map((participant, index) => (
+                        <ParticipantItem
+                            key={participant.id}
+                            participant={participant}
+                            index={index}
+                            currentPerformerId={currentPerformerId}
+                            isInQueue={true}
+                            actions={actions}
+                        />
+                    ))
+                )}
+            </div>
+
+            {/* All Participants Section */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}
+            >
+                <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ margin: '0 0 12px 0', fontSize: '18px' }}>
+                        All Signed Up ({allParticipants.length})
+                    </h3>
+
+                    {/* Filter Row 1: Here Status */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#666', minWidth: '80px' }}>
+                            Presence:
+                        </span>
+                        <button
+                            onClick={() => setHereFilter('all')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: hereFilter === 'all' ? '#1976d2' : '#e0e0e0',
+                                color: hereFilter === 'all' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setHereFilter('here')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: hereFilter === 'here' ? '#1976d2' : '#e0e0e0',
+                                color: hereFilter === 'here' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Here
+                        </button>
+                        <button
+                            onClick={() => setHereFilter('not-here')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: hereFilter === 'not-here' ? '#1976d2' : '#e0e0e0',
+                                color: hereFilter === 'not-here' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Not Here
+                        </button>
+                    </div>
+
+                    {/* Filter Row 2: Queue Status */}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#666', minWidth: '80px' }}>
+                            Queue:
+                        </span>
+                        <button
+                            onClick={() => setQueueFilter('all')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: queueFilter === 'all' ? '#1976d2' : '#e0e0e0',
+                                color: queueFilter === 'all' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setQueueFilter('in-queue')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: queueFilter === 'in-queue' ? '#1976d2' : '#e0e0e0',
+                                color: queueFilter === 'in-queue' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            In Queue
+                        </button>
+                        <button
+                            onClick={() => setQueueFilter('not-in-queue')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: queueFilter === 'not-in-queue' ? '#1976d2' : '#e0e0e0',
+                                color: queueFilter === 'not-in-queue' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Not In Queue
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {allParticipants
+                        .filter(p => {
+                            // Apply "Here" filter
+                            if (hereFilter === 'here' && p.isHere !== true) return false;
+                            if (hereFilter === 'not-here' && p.isHere === true) return false;
+
+                            // Apply "Queue" filter
+                            const isInQueue = queuedParticipantIds.includes(p.id);
+                            if (queueFilter === 'in-queue' && !isInQueue) return false;
+                            if (queueFilter === 'not-in-queue' && isInQueue) return false;
+
+                            return true;
+                        })
+                        .map(participant => {
+                            const isInQueue = queuedParticipantIds.includes(participant.id);
+                            return (
+                                <ParticipantItem
+                                    key={participant.id}
+                                    participant={participant}
+                                    currentPerformerId={currentPerformerId}
+                                    isInQueue={isInQueue}
+                                    showHereCheckbox={true}
+                                    actions={actions}
+                                />
+                            );
+                        })}
+                </div>
+            </div>
+
+            {/* Add Walk-In Participant */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#fff8e1',
+                    border: '1px solid #ffa726',
+                    borderRadius: '8px'
+                }}
+            >
+                <h3 style={{ marginTop: 0, marginBottom: '12px', fontSize: '16px' }}>
+                    Add Walk-In Participant
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
+                            Name *
+                        </label>
+                        <input
+                            type="text"
+                            value={manualName}
+                            onChange={(e) => setManualName(e.target.value)}
+                            placeholder="Participant name"
+                            style={{
+                                width: '100%',
+                                padding: '8px',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                fontSize: '14px'
+                            }}
+                        />
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
+                            Description
+                        </label>
+                        <textarea
+                            value={manualDescription}
+                            onChange={(e) => setManualDescription(e.target.value)}
+                            placeholder="What instruments/style will you be performing? (optional)"
+                            rows={3}
+                            style={{
+                                width: '100%',
+                                padding: '8px',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                fontSize: '14px',
+                                resize: 'vertical',
+                                fontFamily: 'inherit'
+                            }}
+                        />
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
+                            Social Links
+                        </label>
+                        <SocialLinksEditor links={manualLinks} onChange={setManualLinks} />
+                    </div>
+                    <button
+                        onClick={handleAddManual}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#ffa726',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fb8c00'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffa726'}
+                    >
+                        Add Participant
+                    </button>
+                </div>
+            </div>
+
             {/* Configuration Section - Collapsible */}
             <details
                 style={{
@@ -382,258 +634,6 @@ export function BackstagePage({
                 </div>
             </div>
         </details>
-
-            {/* Add Walk-In Participant */}
-            <div
-                style={{
-                    padding: '16px',
-                    marginBottom: '24px',
-                    backgroundColor: '#fff8e1',
-                    border: '1px solid #ffa726',
-                    borderRadius: '8px'
-                }}
-            >
-                <h3 style={{ marginTop: 0, marginBottom: '12px', fontSize: '16px' }}>
-                    Add Walk-In Participant
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
-                            Name *
-                        </label>
-                        <input
-                            type="text"
-                            value={manualName}
-                            onChange={(e) => setManualName(e.target.value)}
-                            placeholder="Participant name"
-                            style={{
-                                width: '100%',
-                                padding: '8px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                                fontSize: '14px'
-                            }}
-                        />
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
-                            Description
-                        </label>
-                        <textarea
-                            value={manualDescription}
-                            onChange={(e) => setManualDescription(e.target.value)}
-                            placeholder="What instruments/style will you be performing? (optional)"
-                            rows={3}
-                            style={{
-                                width: '100%',
-                                padding: '8px',
-                                border: '1px solid #ccc',
-                                borderRadius: '4px',
-                                fontSize: '14px',
-                                resize: 'vertical',
-                                fontFamily: 'inherit'
-                            }}
-                        />
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
-                            Social Links
-                        </label>
-                        <SocialLinksEditor links={manualLinks} onChange={setManualLinks} />
-                    </div>
-                    <button
-                        onClick={handleAddManual}
-                        style={{
-                            padding: '10px 20px',
-                            backgroundColor: '#ffa726',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontWeight: '600',
-                            fontSize: '14px',
-                            transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fb8c00'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffa726'}
-                    >
-                        Add Participant
-                    </button>
-                </div>
-            </div>
-
-            {/* All Participants Section */}
-            <div
-                style={{
-                    padding: '16px',
-                    marginBottom: '24px',
-                    backgroundColor: '#f5f5f5',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px'
-                }}
-            >
-                <div style={{ marginBottom: '16px' }}>
-                    <h3 style={{ margin: '0 0 12px 0', fontSize: '18px' }}>
-                        All Signed Up ({allParticipants.length})
-                    </h3>
-
-                    {/* Filter Row 1: Here Status */}
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#666', minWidth: '80px' }}>
-                            Presence:
-                        </span>
-                        <button
-                            onClick={() => setHereFilter('all')}
-                            style={{
-                                padding: '6px 12px',
-                                backgroundColor: hereFilter === 'all' ? '#1976d2' : '#e0e0e0',
-                                color: hereFilter === 'all' ? 'white' : '#333',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            All
-                        </button>
-                        <button
-                            onClick={() => setHereFilter('here')}
-                            style={{
-                                padding: '6px 12px',
-                                backgroundColor: hereFilter === 'here' ? '#1976d2' : '#e0e0e0',
-                                color: hereFilter === 'here' ? 'white' : '#333',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            Here
-                        </button>
-                        <button
-                            onClick={() => setHereFilter('not-here')}
-                            style={{
-                                padding: '6px 12px',
-                                backgroundColor: hereFilter === 'not-here' ? '#1976d2' : '#e0e0e0',
-                                color: hereFilter === 'not-here' ? 'white' : '#333',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            Not Here
-                        </button>
-                    </div>
-
-                    {/* Filter Row 2: Queue Status */}
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#666', minWidth: '80px' }}>
-                            Queue:
-                        </span>
-                        <button
-                            onClick={() => setQueueFilter('all')}
-                            style={{
-                                padding: '6px 12px',
-                                backgroundColor: queueFilter === 'all' ? '#1976d2' : '#e0e0e0',
-                                color: queueFilter === 'all' ? 'white' : '#333',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            All
-                        </button>
-                        <button
-                            onClick={() => setQueueFilter('in-queue')}
-                            style={{
-                                padding: '6px 12px',
-                                backgroundColor: queueFilter === 'in-queue' ? '#1976d2' : '#e0e0e0',
-                                color: queueFilter === 'in-queue' ? 'white' : '#333',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            In Queue
-                        </button>
-                        <button
-                            onClick={() => setQueueFilter('not-in-queue')}
-                            style={{
-                                padding: '6px 12px',
-                                backgroundColor: queueFilter === 'not-in-queue' ? '#1976d2' : '#e0e0e0',
-                                color: queueFilter === 'not-in-queue' ? 'white' : '#333',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            Not In Queue
-                        </button>
-                    </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {allParticipants
-                        .filter(p => {
-                            // Apply "Here" filter
-                            if (hereFilter === 'here' && p.isHere !== true) return false;
-                            if (hereFilter === 'not-here' && p.isHere === true) return false;
-
-                            // Apply "Queue" filter
-                            const isInQueue = queuedParticipantIds.includes(p.id);
-                            if (queueFilter === 'in-queue' && !isInQueue) return false;
-                            if (queueFilter === 'not-in-queue' && isInQueue) return false;
-
-                            return true;
-                        })
-                        .map(participant => {
-                            const isInQueue = queuedParticipantIds.includes(participant.id);
-                            return (
-                                <ParticipantItem
-                                    key={participant.id}
-                                    participant={participant}
-                                    currentPerformerId={currentPerformerId}
-                                    isInQueue={isInQueue}
-                                    showHereCheckbox={true}
-                                    actions={actions}
-                                />
-                            );
-                        })}
-                </div>
-            </div>
-
-            <div style={{ marginBottom: '16px' }}>
-                <h2>Queue ({queuedParticipants.length})</h2>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {queuedParticipants.length === 0 ? (
-                    <div style={{ padding: '24px', textAlign: 'center', color: '#666', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-                        No participants in queue yet. Add people from the "All Signed Up" section above.
-                    </div>
-                ) : (
-                    queuedParticipants.map((participant, index) => (
-                        <ParticipantItem
-                            key={participant.id}
-                            participant={participant}
-                            index={index}
-                            currentPerformerId={currentPerformerId}
-                            isInQueue={true}
-                            actions={actions}
-                        />
-                    ))
-                )}
-            </div>
         </div>
     );
 }

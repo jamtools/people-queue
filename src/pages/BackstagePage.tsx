@@ -9,15 +9,19 @@ type BackstagePageProps = {
     participants: Participant[];
     currentPerformerId: string | null;
     googleFormUrl: string;
+    songDriveWorkspaceUrl: string;
+    showHelpText: boolean;
     autoRefreshEnabled: boolean;
     lastSyncTimestamp: number | null;
-    actions: Pick<Actions, 'updateParticipant' | 'reorderParticipants' | 'removeParticipant' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant'>;
+    actions: Pick<Actions, 'updateParticipant' | 'reorderParticipants' | 'removeParticipant' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'setSongDriveWorkspaceUrl' | 'toggleHelpText' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant'>;
 };
 
 export function BackstagePage({
     participants,
     currentPerformerId,
     googleFormUrl,
+    songDriveWorkspaceUrl,
+    showHelpText,
     autoRefreshEnabled,
     lastSyncTimestamp,
     actions,
@@ -25,6 +29,7 @@ export function BackstagePage({
     const navigate = useNavigate();
     const currentPerformer = participants.find(p => p.id === currentPerformerId);
     const [urlInput, setUrlInput] = useState(googleFormUrl);
+    const [workspaceUrlInput, setWorkspaceUrlInput] = useState(songDriveWorkspaceUrl);
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncStatus, setSyncStatus] = useState<string | null>(null);
     const [manualName, setManualName] = useState('');
@@ -194,6 +199,92 @@ export function BackstagePage({
                         Current URL: {googleFormUrl}
                     </div>
                 )}
+            </div>
+
+            {/* SongDrive Workspace URL Configuration */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}
+            >
+                <h3 style={{ marginTop: 0, marginBottom: '12px', fontSize: '16px' }}>
+                    SongDrive Workspace URL Configuration
+                </h3>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <input
+                        type="text"
+                        value={workspaceUrlInput}
+                        onChange={(e) => setWorkspaceUrlInput(e.target.value)}
+                        placeholder="https://songdrive.com/workspace/..."
+                        style={{
+                            flex: 1,
+                            padding: '8px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            fontSize: '14px'
+                        }}
+                    />
+                    <button
+                        onClick={() => {
+                            if (workspaceUrlInput && !workspaceUrlInput.startsWith('https://')) {
+                                alert('URL must start with https://');
+                                return;
+                            }
+                            actions.setSongDriveWorkspaceUrl({ url: workspaceUrlInput });
+                        }}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#1976d2',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            fontSize: '14px',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
+                    >
+                        Save
+                    </button>
+                </div>
+                {songDriveWorkspaceUrl && (
+                    <div style={{ fontSize: '12px', color: '#666', wordBreak: 'break-all' }}>
+                        Current URL: {songDriveWorkspaceUrl}
+                    </div>
+                )}
+            </div>
+
+            {/* QR Code Screen Help Text Toggle */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}
+            >
+                <h3 style={{ marginTop: 0, marginBottom: '12px', fontSize: '16px' }}>
+                    QR Code Screen Settings
+                </h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+                    <input
+                        type="checkbox"
+                        checked={showHelpText}
+                        onChange={(e) => actions.toggleHelpText({ enabled: e.target.checked })}
+                        style={{ cursor: 'pointer' }}
+                    />
+                    Show "Need Help Uploading?" text on QR Code screen
+                </label>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '8px', marginLeft: '24px' }}>
+                    When enabled, displays help text below the QR codes directing users to talk to Michael for upload assistance.
+                </div>
             </div>
 
             {/* Google Sheets Sync Controls */}

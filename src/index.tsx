@@ -7,7 +7,11 @@ import { SignupQRPage } from './pages/SignupQRPage';
 import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
+import { WelcomePage } from './pages/WelcomePage';
 import {ModuleAPI} from 'springboard/engine/module_api';
+
+// Import Google Fonts for typography
+import './styles/fonts.css';
 
 // @platform "node"
 import { fetchParticipantsFromSheet } from './services/googleSheets';
@@ -18,6 +22,8 @@ async function createResources(app: ModuleAPI) {
         peopleQueue: [] as Participant[],
         currentPerformerId: null as string | null,
         googleFormUrl: '' as string,
+        songDriveWorkspaceUrl: '' as string,
+        showHelpText: false as boolean,
         autoRefreshEnabled: false as boolean,
         lastSyncTimestamp: null as number | null,
     });
@@ -26,11 +32,14 @@ async function createResources(app: ModuleAPI) {
 
     const actions = app.createActions({
         addParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual'; sheetRowId?: number }) => {
+            // Enforce 3-link maximum (take first 3 if more provided)
+            const validatedSocialLinks = args.socialLinks.slice(0, 3);
+
             const newParticipant: Participant = {
                 id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 name: args.name,
                 description: args.description,
-                socialLinks: args.socialLinks,
+                socialLinks: validatedSocialLinks,
                 order: states.peopleQueue.getState().length,
                 notes: args.notes,
                 source: args.source,
@@ -45,12 +54,15 @@ async function createResources(app: ModuleAPI) {
         },
 
         updateParticipant: async (args: { id: string; name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual'; sheetRowId?: number }) => {
+            // Enforce 3-link maximum (take first 3 if more provided)
+            const validatedSocialLinks = args.socialLinks.slice(0, 3);
+
             states.peopleQueue.setStateImmer((queue: Participant[]) => {
                 const participant = queue.find((p: Participant) => p.id === args.id);
                 if (participant) {
                     participant.name = args.name;
                     participant.description = args.description;
-                    participant.socialLinks = args.socialLinks;
+                    participant.socialLinks = validatedSocialLinks;
                     if (args.notes !== undefined) participant.notes = args.notes;
                     if (args.source !== undefined) participant.source = args.source;
                     if (args.sheetRowId !== undefined) participant.sheetRowId = args.sheetRowId;
@@ -142,12 +154,25 @@ async function createResources(app: ModuleAPI) {
             return {};
         },
 
+        setSongDriveWorkspaceUrl: async (args: { url: string }) => {
+            states.songDriveWorkspaceUrl.setState(args.url);
+            return {};
+        },
+
+        toggleHelpText: async (args: { enabled: boolean }) => {
+            states.showHelpText.setState(args.enabled);
+            return {};
+        },
+
         addManualParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[] }) => {
+            // Enforce 3-link maximum (take first 3 if more provided)
+            const validatedSocialLinks = args.socialLinks.slice(0, 3);
+
             const newParticipant: Participant = {
                 id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 name: args.name,
                 description: args.description,
-                socialLinks: args.socialLinks,
+                socialLinks: validatedSocialLinks,
                 order: states.peopleQueue.getState().length,
                 source: 'manual',
             };
@@ -172,8 +197,14 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
         const participants = states.peopleQueue.useState();
         const currentPerformerId = states.currentPerformerId.useState();
 
+        // Show WelcomePage when no performer is selected (pre-event)
+        // Show DisplayPage when a performer is selected (during event)
+        if (currentPerformerId === null) {
+            return <WelcomePage />;
+        }
+
         return (
-            <LandingPage
+            <DisplayPage
                 participants={participants}
                 currentPerformerId={currentPerformerId}
             />
@@ -182,13 +213,23 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
 
     app.registerRoute('/signup-qr', {}, () => {
         const googleFormUrl = states.googleFormUrl.useState();
-        return <SignupQRPage googleFormUrl={googleFormUrl} />;
+        const songDriveWorkspaceUrl = states.songDriveWorkspaceUrl.useState();
+        const showHelpText = states.showHelpText.useState();
+        return (
+            <SignupQRPage
+                googleFormUrl={googleFormUrl}
+                songDriveWorkspaceUrl={songDriveWorkspaceUrl}
+                showHelpText={showHelpText}
+            />
+        );
     });
 
     app.registerRoute('/backstage', {}, () => {
         const participants = states.peopleQueue.useState();
         const currentPerformerId = states.currentPerformerId.useState();
         const googleFormUrl = states.googleFormUrl.useState();
+        const songDriveWorkspaceUrl = states.songDriveWorkspaceUrl.useState();
+        const showHelpText = states.showHelpText.useState();
         const autoRefreshEnabled = states.autoRefreshEnabled.useState();
         const lastSyncTimestamp = states.lastSyncTimestamp.useState();
 
@@ -197,6 +238,8 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
                 participants={participants}
                 currentPerformerId={currentPerformerId}
                 googleFormUrl={googleFormUrl}
+                songDriveWorkspaceUrl={songDriveWorkspaceUrl}
+                showHelpText={showHelpText}
                 autoRefreshEnabled={autoRefreshEnabled}
                 lastSyncTimestamp={lastSyncTimestamp}
                 actions={actions}

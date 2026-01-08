@@ -133,7 +133,7 @@ function LinkItem({ link, onUpdate, onUpdateType, onDelete, onMoveUp, onMoveDown
     );
 }
 
-export function SocialLinksEditor({ links, onChange, maxLinks = 15 }: SocialLinksEditorProps) {
+export function SocialLinksEditor({ links, onChange, maxLinks = 3 }: SocialLinksEditorProps) {
     const handleUpdate = (id: string, url: string) => {
         const updatedLinks = links.map((link) =>
             link.id === id ? { ...link, url } : link

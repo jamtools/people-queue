@@ -81,7 +81,7 @@ export const dimensions = {
   },
 
   // Footer logo size
-  footerLogoHeight: 30,
+  footerLogoHeight: 40,
 } as const;
 
 /**

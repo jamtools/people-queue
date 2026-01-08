@@ -21,6 +21,7 @@ export function ParticipantItem({
     actions,
 }: ParticipantItemProps) {
     const [isEditing, setIsEditing] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
     const [editName, setEditName] = useState(participant.name);
     const [editDescription, setEditDescription] = useState(participant.description || '');
     const [editNotes, setEditNotes] = useState(participant.notes || '');
@@ -229,7 +230,7 @@ export function ParticipantItem({
                             </div>
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
                         {isCurrentPerformer ? (
                             <button
                                 onClick={() => {
@@ -295,48 +296,7 @@ export function ParticipantItem({
                         >
                             View Profile
                         </a>
-                        <button
-                            onClick={handleStartEdit}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: '#666',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                fontWeight: '500',
-                                transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#666'}
-                        >
-                            Edit
-                        </button>
-                        {isInQueue ? (
-                            <button
-                                onClick={() => {
-                                    if (confirm('Remove this participant from the queue?')) {
-                                        actions.removeFromQueue({ id: participant.id });
-                                    }
-                                }}
-                                style={{
-                                    padding: '8px 16px',
-                                    backgroundColor: '#d32f2f',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    fontWeight: '500',
-                                    transition: 'all 0.2s ease'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c62828'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#d32f2f'}
-                            >
-                                Remove from Queue
-                            </button>
-                        ) : (
+                        {!isInQueue && (
                             <button
                                 onClick={() => actions.addToQueue({ id: participant.id })}
                                 style={{
@@ -356,28 +316,117 @@ export function ParticipantItem({
                                 Add to Queue
                             </button>
                         )}
-                        <button
-                            onClick={() => {
-                                if (confirm('Permanently delete this participant?')) {
-                                    actions.removeParticipant({ id: participant.id });
-                                }
-                            }}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: '#d32f2f',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                fontWeight: '500',
-                                transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c62828'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#d32f2f'}
-                        >
-                            Delete
-                        </button>
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setShowMenu(!showMenu)}
+                                onBlur={() => setTimeout(() => setShowMenu(false), 200)}
+                                style={{
+                                    padding: '8px 12px',
+                                    backgroundColor: '#666',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    transition: 'all 0.2s ease',
+                                    lineHeight: '1'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#666'}
+                            >
+                                ⋮
+                            </button>
+                            {showMenu && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '100%',
+                                        right: 0,
+                                        marginTop: '4px',
+                                        backgroundColor: 'white',
+                                        border: '1px solid #ddd',
+                                        borderRadius: '4px',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                                        zIndex: 1000,
+                                        minWidth: '180px'
+                                    }}
+                                >
+                                    <button
+                                        onClick={() => {
+                                            setShowMenu(false);
+                                            handleStartEdit();
+                                        }}
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px 16px',
+                                            backgroundColor: 'white',
+                                            color: '#333',
+                                            border: 'none',
+                                            borderBottom: '1px solid #eee',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            textAlign: 'left',
+                                            transition: 'background-color 0.2s ease'
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                                    >
+                                        Edit
+                                    </button>
+                                    {isInQueue && (
+                                        <button
+                                            onClick={() => {
+                                                setShowMenu(false);
+                                                if (confirm('Remove this participant from the queue?')) {
+                                                    actions.removeFromQueue({ id: participant.id });
+                                                }
+                                            }}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px 16px',
+                                                backgroundColor: 'white',
+                                                color: '#d32f2f',
+                                                border: 'none',
+                                                borderBottom: '1px solid #eee',
+                                                cursor: 'pointer',
+                                                fontSize: '14px',
+                                                textAlign: 'left',
+                                                transition: 'background-color 0.2s ease'
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#ffebee'}
+                                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                                        >
+                                            Remove from Queue
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => {
+                                            setShowMenu(false);
+                                            if (confirm('Permanently delete this participant?')) {
+                                                actions.removeParticipant({ id: participant.id });
+                                            }
+                                        }}
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px 16px',
+                                            backgroundColor: 'white',
+                                            color: '#d32f2f',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            fontSize: '14px',
+                                            textAlign: 'left',
+                                            transition: 'background-color 0.2s ease',
+                                            borderRadius: '0 0 4px 4px'
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#ffebee'}
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

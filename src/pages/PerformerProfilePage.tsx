@@ -82,8 +82,8 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     onClick={() => navigate('/queue')}
                     style={{
                         padding: '10px 16px',
-                        backgroundColor: 'rgba(25, 118, 210, 0.95)',
-                        color: 'white',
+                        backgroundColor: hexToRgba(colors.midnightCruise, 0.95),
+                        color: colors.whiteNoise,
                         border: 'none',
                         borderRadius: '4px',
                         cursor: 'pointer',
@@ -93,12 +93,12 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                         boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
                     }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(25, 118, 210, 1)';
+                        e.currentTarget.style.backgroundColor = colors.midnightCruise;
                         e.currentTarget.style.transform = 'translateY(-1px)';
                         e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
                     }}
                     onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(25, 118, 210, 0.95)';
+                        e.currentTarget.style.backgroundColor = hexToRgba(colors.midnightCruise, 0.95);
                         e.currentTarget.style.transform = 'translateY(0)';
                         e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
                     }}

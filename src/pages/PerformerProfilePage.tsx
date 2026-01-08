@@ -201,7 +201,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexShrink: 0,
                                         color: colors.midnightCruise,
                                     }}>
-                                        <Icon size={20} />
+                                        <Icon size={28} />
                                     </div>
 
                                     {/* Handle Text */}
@@ -229,7 +229,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexShrink: 0,
                                         color: hexToRgba(colors.midnightCruise, opacity.arrow),
                                     }}>
-                                        <ChevronRight size={18} />
+                                        <ChevronRight size={24} />
                                     </div>
                                 </a>
                             );

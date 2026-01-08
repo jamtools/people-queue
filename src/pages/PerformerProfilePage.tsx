@@ -201,18 +201,19 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
             <div style={{
                 marginTop: 'auto',
                 paddingTop: '48px',
-                paddingBottom: `${spacing.lg}px`,
+                paddingBottom: `${spacing.md}px`,
+                paddingLeft: `${spacing.md}px`,
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 gap: `${spacing.sm}px`,
             }}>
                 <span style={{
                     ...getTypographyStyle('footerText', 'mobile'),
                     color: colors.whiteNoise,
                 }}>
-                    Powered by SongDrive
+                    Powered by
                 </span>
                 <img
                     src="/assets/cloud_gradient_logo.png"

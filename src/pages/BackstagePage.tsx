@@ -95,6 +95,7 @@ export function BackstagePage({
             name: manualName.trim(),
             description: manualDescription.trim() || undefined,
             socialLinks: manualLinks,
+            addToQueue: true, // Add to queue by default when adding manually
         });
 
         // Clear form
@@ -438,12 +439,155 @@ export function BackstagePage({
                 </div>
             </div>
 
+            {/* All Participants Section */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}
+            >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ margin: 0, fontSize: '18px' }}>
+                        All Signed Up ({allParticipants.length})
+                    </h3>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                            onClick={() => setShowFilter('all')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: showFilter === 'all' ? '#1976d2' : '#e0e0e0',
+                                color: showFilter === 'all' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setShowFilter('here')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: showFilter === 'here' ? '#1976d2' : '#e0e0e0',
+                                color: showFilter === 'here' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Here
+                        </button>
+                        <button
+                            onClick={() => setShowFilter('not-here')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: showFilter === 'not-here' ? '#1976d2' : '#e0e0e0',
+                                color: showFilter === 'not-here' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Not Here
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {allParticipants
+                        .filter(p => {
+                            if (showFilter === 'here') return p.isHere === true;
+                            if (showFilter === 'not-here') return p.isHere !== true;
+                            return true;
+                        })
+                        .map(participant => {
+                            const isInQueue = queuedParticipantIds.includes(participant.id);
+                            return (
+                                <div
+                                    key={participant.id}
+                                    style={{
+                                        padding: '12px',
+                                        backgroundColor: 'white',
+                                        border: '1px solid #ddd',
+                                        borderRadius: '4px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={participant.isHere === true}
+                                                onChange={(e) => actions.toggleParticipantHere({ id: participant.id, isHere: e.target.checked })}
+                                                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                            />
+                                            <span style={{ fontSize: '13px', fontWeight: '500', color: '#666' }}>Here</span>
+                                        </label>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontWeight: '600', fontSize: '15px' }}>{participant.name}</div>
+                                            {participant.description && (
+                                                <div style={{ fontSize: '13px', color: '#666', marginTop: '2px' }}>{participant.description}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        {isInQueue ? (
+                                            <button
+                                                onClick={() => actions.removeFromQueue({ id: participant.id })}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: '#d32f2f',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '13px',
+                                                    fontWeight: '500'
+                                                }}
+                                            >
+                                                Remove from Queue
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => actions.addToQueue({ id: participant.id })}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: '#4caf50',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '13px',
+                                                    fontWeight: '500'
+                                                }}
+                                            >
+                                                Add to Queue
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                </div>
+            </div>
+
             <div style={{ marginBottom: '16px' }}>
-                <h2>Queue ({participants.length})</h2>
+                <h2>Queue ({queuedParticipants.length})</h2>
             </div>
 
             <QueueManager
-                participants={participants}
+                participants={queuedParticipants}
                 currentPerformerId={currentPerformerId}
                 actions={actions}
             />

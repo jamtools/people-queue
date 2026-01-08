@@ -10,7 +10,7 @@ import { IconGripVertical } from '@tabler/icons-react';
 type QueueManagerProps = {
     participants: Participant[];
     currentPerformerId: string | null;
-    actions: Pick<Actions, 'updateParticipant' | 'reorderParticipants' | 'removeParticipant' | 'setCurrentPerformer'>;
+    actions: Pick<Actions, 'updateParticipant' | 'reorderQueue' | 'removeFromQueue' | 'setCurrentPerformer'>;
 };
 
 type SortableItemProps = {
@@ -446,8 +446,8 @@ export function QueueManager({
         const newIndex = participants.findIndex(p => p.id === over.id);
 
         const newParticipants = arrayMove(participants, oldIndex, newIndex);
-        actions.reorderParticipants({
-            participants: newParticipants.map((p, i) => ({ ...p, order: i }))
+        actions.reorderQueue({
+            participantIds: newParticipants.map(p => p.id)
         });
     };
 
@@ -456,7 +456,7 @@ export function QueueManager({
         if (index > 0) {
             const newParticipants = [...participants];
             [newParticipants[index - 1], newParticipants[index]] = [newParticipants[index], newParticipants[index - 1]];
-            actions.reorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
+            actions.reorderQueue({ participantIds: newParticipants.map(p => p.id) });
         }
     };
 
@@ -465,13 +465,13 @@ export function QueueManager({
         if (index < participants.length - 1) {
             const newParticipants = [...participants];
             [newParticipants[index], newParticipants[index + 1]] = [newParticipants[index + 1], newParticipants[index]];
-            actions.reorderParticipants({ participants: newParticipants.map((p, i) => ({ ...p, order: i })) });
+            actions.reorderQueue({ participantIds: newParticipants.map(p => p.id) });
         }
     };
 
     const handleDelete = (id: string) => {
         if (confirm('Remove this participant from the queue?')) {
-            actions.removeParticipant({ id });
+            actions.removeFromQueue({ id });
         }
     };
 

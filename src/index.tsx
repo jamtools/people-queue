@@ -15,6 +15,7 @@ import './styles/fonts.css';
 
 // @platform "node"
 import { fetchParticipantsFromSheet } from './services/googleSheets';
+import '../server/public_assets';
 // @platform end
 
 async function createResources(app: ModuleAPI) {

@@ -280,7 +280,27 @@ export function ParticipantItem({
                                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#43a047'}
                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4caf50'}
                             >
-                                Now Performing
+                                Set As Performing
+                            </button>
+                        )}
+                        {!isInQueue && (
+                            <button
+                                onClick={() => actions.addToQueue({ id: participant.id })}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#4caf50',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#43a047'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4caf50'}
+                            >
+                                Add to Queue
                             </button>
                         )}
                         <a
@@ -305,26 +325,6 @@ export function ParticipantItem({
                         >
                             View Profile
                         </a>
-                        {!isInQueue && (
-                            <button
-                                onClick={() => actions.addToQueue({ id: participant.id })}
-                                style={{
-                                    padding: '8px 16px',
-                                    backgroundColor: '#4caf50',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    fontWeight: '500',
-                                    transition: 'all 0.2s ease'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#43a047'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4caf50'}
-                            >
-                                Add to Queue
-                            </button>
-                        )}
                         <div style={{ position: 'relative' }}>
                             <button
                                 onClick={() => setShowMenu(!showMenu)}

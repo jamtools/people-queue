@@ -211,13 +211,21 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                gap: '4px',
             }}>
                 <span style={{
                     ...getTypographyStyle('footerText', 'mobile'),
                     fontWeight: 300,
                     color: colors.whiteNoise,
                 }}>
-                    Powered by <span style={{ fontWeight: 500 }}>SongDrive</span>
+                    Powered by
+                </span>
+                <span style={{
+                    ...getTypographyStyle('footerText', 'mobile'),
+                    fontWeight: 500,
+                    color: colors.whiteNoise,
+                }}>
+                    SongDrive
                 </span>
             </div>
 

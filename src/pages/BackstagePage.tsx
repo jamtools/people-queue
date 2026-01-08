@@ -39,7 +39,8 @@ export function BackstagePage({
     const currentPerformer = allParticipants.find(p => p.id === currentPerformerId);
 
     // Filter state for all participants list
-    const [showFilter, setShowFilter] = useState<'all' | 'here' | 'not-here'>('all');
+    const [hereFilter, setHereFilter] = useState<'all' | 'here' | 'not-here'>('all');
+    const [queueFilter, setQueueFilter] = useState<'all' | 'in-queue' | 'not-in-queue'>('all');
     const [urlInput, setUrlInput] = useState(googleFormUrl);
     const [workspaceUrlInput, setWorkspaceUrlInput] = useState(songDriveWorkspaceUrl);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -450,17 +451,22 @@ export function BackstagePage({
                     borderRadius: '8px'
                 }}
             >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h3 style={{ margin: 0, fontSize: '18px' }}>
+                <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ margin: '0 0 12px 0', fontSize: '18px' }}>
                         All Signed Up ({allParticipants.length})
                     </h3>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+
+                    {/* Filter Row 1: Here Status */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#666', minWidth: '80px' }}>
+                            Presence:
+                        </span>
                         <button
-                            onClick={() => setShowFilter('all')}
+                            onClick={() => setHereFilter('all')}
                             style={{
                                 padding: '6px 12px',
-                                backgroundColor: showFilter === 'all' ? '#1976d2' : '#e0e0e0',
-                                color: showFilter === 'all' ? 'white' : '#333',
+                                backgroundColor: hereFilter === 'all' ? '#1976d2' : '#e0e0e0',
+                                color: hereFilter === 'all' ? 'white' : '#333',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
@@ -471,11 +477,11 @@ export function BackstagePage({
                             All
                         </button>
                         <button
-                            onClick={() => setShowFilter('here')}
+                            onClick={() => setHereFilter('here')}
                             style={{
                                 padding: '6px 12px',
-                                backgroundColor: showFilter === 'here' ? '#1976d2' : '#e0e0e0',
-                                color: showFilter === 'here' ? 'white' : '#333',
+                                backgroundColor: hereFilter === 'here' ? '#1976d2' : '#e0e0e0',
+                                color: hereFilter === 'here' ? 'white' : '#333',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
@@ -486,11 +492,11 @@ export function BackstagePage({
                             Here
                         </button>
                         <button
-                            onClick={() => setShowFilter('not-here')}
+                            onClick={() => setHereFilter('not-here')}
                             style={{
                                 padding: '6px 12px',
-                                backgroundColor: showFilter === 'not-here' ? '#1976d2' : '#e0e0e0',
-                                color: showFilter === 'not-here' ? 'white' : '#333',
+                                backgroundColor: hereFilter === 'not-here' ? '#1976d2' : '#e0e0e0',
+                                color: hereFilter === 'not-here' ? 'white' : '#333',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
@@ -501,13 +507,72 @@ export function BackstagePage({
                             Not Here
                         </button>
                     </div>
+
+                    {/* Filter Row 2: Queue Status */}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#666', minWidth: '80px' }}>
+                            Queue:
+                        </span>
+                        <button
+                            onClick={() => setQueueFilter('all')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: queueFilter === 'all' ? '#1976d2' : '#e0e0e0',
+                                color: queueFilter === 'all' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => setQueueFilter('in-queue')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: queueFilter === 'in-queue' ? '#1976d2' : '#e0e0e0',
+                                color: queueFilter === 'in-queue' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            In Queue
+                        </button>
+                        <button
+                            onClick={() => setQueueFilter('not-in-queue')}
+                            style={{
+                                padding: '6px 12px',
+                                backgroundColor: queueFilter === 'not-in-queue' ? '#1976d2' : '#e0e0e0',
+                                color: queueFilter === 'not-in-queue' ? 'white' : '#333',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Not In Queue
+                        </button>
+                    </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {allParticipants
                         .filter(p => {
-                            if (showFilter === 'here') return p.isHere === true;
-                            if (showFilter === 'not-here') return p.isHere !== true;
+                            // Apply "Here" filter
+                            if (hereFilter === 'here' && p.isHere !== true) return false;
+                            if (hereFilter === 'not-here' && p.isHere === true) return false;
+
+                            // Apply "Queue" filter
+                            const isInQueue = queuedParticipantIds.includes(p.id);
+                            if (queueFilter === 'in-queue' && !isInQueue) return false;
+                            if (queueFilter === 'not-in-queue' && isInQueue) return false;
+
                             return true;
                         })
                         .map(participant => {

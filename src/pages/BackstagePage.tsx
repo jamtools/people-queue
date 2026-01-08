@@ -156,6 +156,26 @@ export function BackstagePage({
                 </div>
             )}
 
+            {/* Configuration Section - Collapsible */}
+            <details
+                style={{
+                    marginBottom: '24px',
+                    padding: '16px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}
+            >
+                <summary style={{
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    marginBottom: '16px',
+                    userSelect: 'none'
+                }}>
+                    Configuration
+                </summary>
+
             {/* Google Form URL Configuration */}
             <div
                 style={{
@@ -361,6 +381,7 @@ export function BackstagePage({
                     </div>
                 </div>
             </div>
+        </details>
 
             {/* Add Walk-In Participant */}
             <div

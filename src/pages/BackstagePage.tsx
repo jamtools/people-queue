@@ -6,18 +6,20 @@ import { SocialLinksEditor } from '../components/SocialLinksEditor';
 import type { Actions } from '../index';
 
 type BackstagePageProps = {
-    participants: Participant[];
+    allParticipants: Participant[];
+    queuedParticipantIds: string[];
     currentPerformerId: string | null;
     googleFormUrl: string;
     songDriveWorkspaceUrl: string;
     showHelpText: boolean;
     autoRefreshEnabled: boolean;
     lastSyncTimestamp: number | null;
-    actions: Pick<Actions, 'updateParticipant' | 'reorderParticipants' | 'removeParticipant' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'setSongDriveWorkspaceUrl' | 'toggleHelpText' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant'>;
+    actions: Pick<Actions, 'updateParticipant' | 'reorderQueue' | 'removeParticipant' | 'removeFromQueue' | 'addToQueue' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'setSongDriveWorkspaceUrl' | 'toggleHelpText' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant' | 'toggleParticipantHere'>;
 };
 
 export function BackstagePage({
-    participants,
+    allParticipants,
+    queuedParticipantIds,
     currentPerformerId,
     googleFormUrl,
     songDriveWorkspaceUrl,
@@ -27,7 +29,16 @@ export function BackstagePage({
     actions,
 }: BackstagePageProps) {
     const navigate = useNavigate();
-    const currentPerformer = participants.find(p => p.id === currentPerformerId);
+
+    // Get queued participants in order
+    const queuedParticipants = queuedParticipantIds
+        .map(id => allParticipants.find(p => p.id === id))
+        .filter((p): p is Participant => p !== undefined);
+
+    const currentPerformer = allParticipants.find(p => p.id === currentPerformerId);
+
+    // Filter state for all participants list
+    const [showFilter, setShowFilter] = useState<'all' | 'here' | 'not-here'>('all');
     const [urlInput, setUrlInput] = useState(googleFormUrl);
     const [workspaceUrlInput, setWorkspaceUrlInput] = useState(songDriveWorkspaceUrl);
     const [isSyncing, setIsSyncing] = useState(false);

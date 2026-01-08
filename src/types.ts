@@ -17,4 +17,5 @@ export type Participant = {
     notes?: string;
     source?: 'sheets' | 'manual';
     sheetRowId?: number;
+    isHere?: boolean; // Whether the performer is physically present
 };

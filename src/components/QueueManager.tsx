@@ -343,6 +343,28 @@ function SortableItem({
                                     Now Performing
                                 </button>
                             )}
+                            <a
+                                href={`/performer/${participant.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#1976d2',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    transition: 'all 0.2s ease',
+                                    textDecoration: 'none',
+                                    display: 'inline-block'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
+                            >
+                                View Profile
+                            </a>
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();

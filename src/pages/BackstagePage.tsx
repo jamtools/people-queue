@@ -110,9 +110,9 @@ export function BackstagePage({
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h1>Backstage - Queue Management</h1>
-                {currentPerformer && (
+                <div style={{ display: 'flex', gap: '8px' }}>
                     <button
-                        onClick={() => navigate('/display')}
+                        onClick={() => navigate('/')}
                         style={{
                             padding: '12px 24px',
                             fontSize: '16px',
@@ -127,9 +127,29 @@ export function BackstagePage({
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
                     >
-                        View Display
+                        Show Kiosk View
                     </button>
-                )}
+                    {currentPerformer && (
+                        <button
+                            onClick={() => navigate('/display')}
+                            style={{
+                                padding: '12px 24px',
+                                fontSize: '16px',
+                                backgroundColor: '#4caf50',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '500',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#43a047'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4caf50'}
+                        >
+                            View Display
+                        </button>
+                    )}
+                </div>
             </div>
 
             {currentPerformer && (

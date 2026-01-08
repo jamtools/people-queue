@@ -210,7 +210,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     ...getTypographyStyle('footerText', 'mobile'),
                     color: colors.whiteNoise,
                 }}>
-                    Powered by SongDrive
+                    Powered by <span style={{ fontWeight: 700 }}>SongDrive</span>
                 </span>
             </div>
 

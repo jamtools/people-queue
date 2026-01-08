@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { Participant } from '../types';
 import { QueueManager } from '../components/QueueManager';
 import { SocialLinksEditor } from '../components/SocialLinksEditor';
+import { ParticipantItem } from '../components/ParticipantItem';
 import type { Actions } from '../index';
 
 type BackstagePageProps = {
@@ -502,7 +503,7 @@ export function BackstagePage({
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {allParticipants
                         .filter(p => {
                             if (showFilter === 'here') return p.isHere === true;
@@ -512,71 +513,14 @@ export function BackstagePage({
                         .map(participant => {
                             const isInQueue = queuedParticipantIds.includes(participant.id);
                             return (
-                                <div
+                                <ParticipantItem
                                     key={participant.id}
-                                    style={{
-                                        padding: '12px',
-                                        backgroundColor: 'white',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                            <input
-                                                type="checkbox"
-                                                checked={participant.isHere === true}
-                                                onChange={(e) => actions.toggleParticipantHere({ id: participant.id, isHere: e.target.checked })}
-                                                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                                            />
-                                            <span style={{ fontSize: '13px', fontWeight: '500', color: '#666' }}>Here</span>
-                                        </label>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontWeight: '600', fontSize: '15px' }}>{participant.name}</div>
-                                            {participant.description && (
-                                                <div style={{ fontSize: '13px', color: '#666', marginTop: '2px' }}>{participant.description}</div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        {isInQueue ? (
-                                            <button
-                                                onClick={() => actions.removeFromQueue({ id: participant.id })}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    backgroundColor: '#d32f2f',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    fontSize: '13px',
-                                                    fontWeight: '500'
-                                                }}
-                                            >
-                                                Remove from Queue
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={() => actions.addToQueue({ id: participant.id })}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    backgroundColor: '#4caf50',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer',
-                                                    fontSize: '13px',
-                                                    fontWeight: '500'
-                                                }}
-                                            >
-                                                Add to Queue
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
+                                    participant={participant}
+                                    currentPerformerId={currentPerformerId}
+                                    isInQueue={isInQueue}
+                                    showHereCheckbox={true}
+                                    actions={actions}
+                                />
                             );
                         })}
                 </div>
@@ -586,11 +530,24 @@ export function BackstagePage({
                 <h2>Queue ({queuedParticipants.length})</h2>
             </div>
 
-            <QueueManager
-                participants={queuedParticipants}
-                currentPerformerId={currentPerformerId}
-                actions={actions}
-            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {queuedParticipants.length === 0 ? (
+                    <div style={{ padding: '24px', textAlign: 'center', color: '#666', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                        No participants in queue yet. Add people from the "All Signed Up" section above.
+                    </div>
+                ) : (
+                    queuedParticipants.map((participant, index) => (
+                        <ParticipantItem
+                            key={participant.id}
+                            participant={participant}
+                            index={index}
+                            currentPerformerId={currentPerformerId}
+                            isInQueue={true}
+                            actions={actions}
+                        />
+                    ))
+                )}
+            </div>
         </div>
     );
 }

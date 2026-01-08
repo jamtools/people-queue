@@ -31,7 +31,6 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '20px',
                 textAlign: 'center',
             }}>
                 <h1 style={{
@@ -63,7 +62,6 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
             background: `linear-gradient(135deg, ${colors.bridgeDrop} 0%, ${colors.cloudSync} 100%)`,
             display: 'flex',
             flexDirection: 'column',
-            padding: '20px',
         }}>
             {/* Band Name Section */}
             <div style={{
@@ -103,10 +101,13 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                 maxWidth: '500px',
                 width: '100%',
                 margin: '48px auto 0',
-                backgroundColor: hexToRgba(colors.melodyMist, opacity.socialContainer),
-                borderRadius: `${borderRadius.socialContainer}px`,
-                padding: `${spacing.lg}px`,
+                padding: '0 20px',
             }}>
+                <div style={{
+                    backgroundColor: hexToRgba(colors.melodyMist, opacity.socialContainer),
+                    borderRadius: `${borderRadius.socialContainer}px`,
+                    padding: `${spacing.md}px`,
+                }}>
                 {sortedLinks.length === 0 ? (
                     <div style={{
                         ...getTypographyStyle('body', 'mobile'),
@@ -136,8 +137,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexDirection: 'row',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        minHeight: `${dimensions.socialButton.height}px`,
-                                        padding: `12px ${spacing.md}px`,
+                                        padding: `${spacing.sm}px`,
                                         backgroundColor: hexToRgba(colors.whiteNoise, opacity.socialButton),
                                         borderRadius: `${borderRadius.socialButton}px`,
                                         textDecoration: 'none',
@@ -158,14 +158,15 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexShrink: 0,
                                         color: colors.midnightCruise,
                                     }}>
-                                        <Icon size={dimensions.socialButton.iconSize} />
+                                        <Icon size={24} />
                                     </div>
 
                                     {/* Handle Text */}
                                     <div style={{
                                         flex: 1,
                                         textAlign: 'center',
-                                        ...getTypographyStyle('socialHandle', 'mobile'),
+                                        ...getTypographyStyle('body', 'mobile'),
+                                        fontWeight: 600,
                                         color: colors.midnightCruise,
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
@@ -183,13 +184,14 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexShrink: 0,
                                         color: hexToRgba(colors.midnightCruise, opacity.arrow),
                                     }}>
-                                        <ChevronRight size={dimensions.socialButton.chevronSize} />
+                                        <ChevronRight size={20} />
                                     </div>
                                 </a>
                             );
                         })}
                     </div>
                 )}
+                </div>
             </div>
 
             {/* Footer */}

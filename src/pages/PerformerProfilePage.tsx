@@ -72,7 +72,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
         }}>
             {/* Band Name Section */}
             <div style={{
-                paddingTop: '40px',
+                paddingTop: '80px',
                 textAlign: 'center',
             }}>
                 <h1 style={{

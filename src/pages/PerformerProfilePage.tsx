@@ -141,10 +141,10 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
 
             {/* Social Links Container */}
             <div style={{
-                maxWidth: '320px',
+                maxWidth: '100%',
                 width: '100%',
                 margin: '48px auto 0',
-                padding: '0 20px',
+                padding: '0 16px',
             }}>
                 <div style={{
                     backgroundColor: hexToRgba(colors.melodyMist, opacity.socialContainer),

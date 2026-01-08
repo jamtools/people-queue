@@ -25,13 +25,14 @@ export function BackgroundLayout({
 }: BackgroundLayoutProps) {
   const containerStyle: CSSProperties = {
     minHeight: '100vh',
-    minWidth: '100vw',
+    width: '100vw',
     backgroundImage: 'url(/assets/background.svg)',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     position: 'relative',
     overflow: 'hidden',
+    boxSizing: 'border-box',
     ...style,
   };
 

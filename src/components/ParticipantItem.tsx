@@ -164,70 +164,79 @@ export function ParticipantItem({
             ) : (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1 }}>
-                            {showHereCheckbox && (
-                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', paddingTop: '2px' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={participant.isHere === true}
-                                        onChange={(e) => actions.toggleParticipantHere({ id: participant.id, isHere: e.target.checked })}
-                                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                                    />
-                                    <span style={{ fontSize: '13px', fontWeight: '500', color: '#666' }}>Here</span>
-                                </label>
-                            )}
-                            <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
                                 <div style={{
                                     fontSize: '18px',
                                     fontWeight: 'bold',
-                                    marginBottom: '4px',
                                     wordWrap: 'break-word',
                                     overflowWrap: 'break-word'
                                 }}>
                                     {index !== undefined ? `${index + 1}. ` : ''}{participant.name}
                                 </div>
-                                {participant.description && (
-                                    <div
-                                        style={{
-                                            fontSize: '12px',
-                                            color: '#999',
-                                            marginBottom: '4px',
-                                            fontStyle: 'italic',
-                                            wordWrap: 'break-word',
-                                            overflowWrap: 'break-word'
-                                        }}
-                                        title={participant.description.length > 120 ? participant.description : undefined}
-                                    >
-                                        {participant.description.length > 120
-                                            ? participant.description.substring(0, 120) + '...'
-                                            : participant.description
-                                        }
-                                    </div>
-                                )}
-                                {participant.notes && (
-                                    <div
-                                        style={{
-                                            fontSize: '11px',
-                                            color: '#cc8800',
-                                            marginBottom: '4px',
-                                            fontStyle: 'italic',
-                                            wordWrap: 'break-word',
-                                            overflowWrap: 'break-word',
-                                            backgroundColor: '#fffbf0',
-                                            padding: '4px 6px',
-                                            borderRadius: '4px',
-                                            border: '1px solid #ffe4a3'
-                                        }}
-                                    >
-                                        Backstage note: {participant.notes}
-                                    </div>
-                                )}
-                                {participant.socialLinks.length > 0 && (
-                                    <div style={{ fontSize: '14px', color: '#666' }}>
-                                        {participant.socialLinks.length} social link{participant.socialLinks.length !== 1 ? 's' : ''}
-                                    </div>
+                                {showHereCheckbox && (
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={participant.isHere === true}
+                                            onChange={(e) => actions.toggleParticipantHere({ id: participant.id, isHere: e.target.checked })}
+                                            style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+                                        />
+                                        <span style={{
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            color: participant.isHere ? '#4caf50' : '#999',
+                                            transition: 'color 0.2s ease'
+                                        }}>
+                                            {participant.isHere ? 'Here' : 'Not Here'}
+                                        </span>
+                                    </label>
                                 )}
                             </div>
+                            {participant.notes && (
+                                <div
+                                    style={{
+                                        fontSize: '13px',
+                                        color: '#d97706',
+                                        marginBottom: '6px',
+                                        fontWeight: '500',
+                                        wordWrap: 'break-word',
+                                        overflowWrap: 'break-word',
+                                        backgroundColor: '#fef3c7',
+                                        padding: '6px 10px',
+                                        borderRadius: '4px',
+                                        border: '1px solid #fbbf24',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px'
+                                    }}
+                                >
+                                    <span style={{ fontWeight: '700' }}>Note:</span> {participant.notes}
+                                </div>
+                            )}
+                            {participant.description && (
+                                <div
+                                    style={{
+                                        fontSize: '13px',
+                                        color: '#666',
+                                        marginBottom: '4px',
+                                        fontStyle: 'italic',
+                                        wordWrap: 'break-word',
+                                        overflowWrap: 'break-word'
+                                    }}
+                                    title={participant.description.length > 120 ? participant.description : undefined}
+                                >
+                                    {participant.description.length > 120
+                                        ? participant.description.substring(0, 120) + '...'
+                                        : participant.description
+                                    }
+                                </div>
+                            )}
+                            {participant.socialLinks.length > 0 && (
+                                <div style={{ fontSize: '13px', color: '#666' }}>
+                                    {participant.socialLinks.length} social link{participant.socialLinks.length !== 1 ? 's' : ''}
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>

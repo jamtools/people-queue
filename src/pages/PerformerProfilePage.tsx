@@ -27,7 +27,10 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
         return (
             <div style={{
                 minHeight: '100vh',
-                background: `linear-gradient(135deg, ${colors.bridgeDrop} 0%, ${colors.cloudSync} 100%)`,
+                backgroundImage: 'url(/assets/background.svg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -60,7 +63,10 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
     return (
         <div style={{
             minHeight: '100vh',
-            background: `linear-gradient(135deg, ${colors.bridgeDrop} 0%, ${colors.cloudSync} 100%)`,
+            backgroundImage: 'url(/assets/background.svg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
             display: 'flex',
             flexDirection: 'column',
         }}>

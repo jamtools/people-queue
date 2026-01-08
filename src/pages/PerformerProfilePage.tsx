@@ -197,12 +197,28 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                 </div>
             </div>
 
-            {/* Footer */}
+            {/* Footer - Centered Text */}
             <div style={{
                 marginTop: 'auto',
                 paddingTop: '48px',
-                paddingBottom: `${spacing.md}px`,
-                paddingLeft: `${spacing.md}px`,
+                paddingBottom: `${spacing.lg}px`,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+                <span style={{
+                    ...getTypographyStyle('footerText', 'mobile'),
+                    color: colors.whiteNoise,
+                }}>
+                    Powered by SongDrive
+                </span>
+            </div>
+
+            {/* Floating Logo - Bottom Left */}
+            <div style={{
+                position: 'fixed',
+                bottom: `${spacing.md}px`,
+                left: `${spacing.md}px`,
             }}>
                 <img
                     src="/assets/cloud_gradient_logo.png"

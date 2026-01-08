@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { ChevronRight } from 'lucide-react';
 import { Participant } from '../types';
 import { buildSocialUrl, getPlatformIcon } from '../utils/socialLinks';
@@ -21,6 +21,7 @@ type PerformerProfilePageProps = {
 
 export function PerformerProfilePage({ participants }: PerformerProfilePageProps) {
     const { performerId } = useParams<{ performerId: string }>();
+    const navigate = useNavigate();
     const performer = participants.find(p => p.id === performerId);
 
     if (!performer) {
@@ -70,6 +71,41 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
             display: 'flex',
             flexDirection: 'column',
         }}>
+            {/* View Queue Button */}
+            <div style={{
+                position: 'fixed',
+                top: `${spacing.md}px`,
+                right: `${spacing.md}px`,
+                zIndex: 100
+            }}>
+                <button
+                    onClick={() => navigate('/queue')}
+                    style={{
+                        padding: '10px 16px',
+                        backgroundColor: 'rgba(25, 118, 210, 0.95)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(25, 118, 210, 1)';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(25, 118, 210, 0.95)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+                    }}
+                >
+                    View Queue
+                </button>
+            </div>
             {/* Band Name Section */}
             <div style={{
                 paddingTop: '120px',

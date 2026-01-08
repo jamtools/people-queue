@@ -8,6 +8,7 @@ import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
 import { WelcomePage } from './pages/WelcomePage';
+import { QueueListPage } from './pages/QueueListPage';
 import {ModuleAPI} from 'springboard/engine/module_api';
 
 // Import Google Fonts for typography
@@ -321,6 +322,12 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
     app.registerRoute('/performer/:performerId', {}, () => {
         const allParticipants = states.allParticipants.useState();
         return <PerformerProfilePage participants={allParticipants} />;
+    });
+
+    app.registerRoute('/queue', {}, () => {
+        const allParticipants = states.allParticipants.useState();
+        const queuedParticipantIds = states.queuedParticipantIds.useState();
+        return <QueueListPage allParticipants={allParticipants} queuedParticipantIds={queuedParticipantIds} />;
     });
 
     return {};

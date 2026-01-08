@@ -214,7 +214,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
             }}>
                 <span style={{
                     ...getTypographyStyle('footerText', 'mobile'),
-                    fontWeight: 400,
+                    fontWeight: 300,
                     color: colors.whiteNoise,
                 }}>
                     Powered by <span style={{ fontWeight: 500 }}>SongDrive</span>

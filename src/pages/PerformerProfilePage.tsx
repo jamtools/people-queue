@@ -12,6 +12,7 @@ import {
     spacing,
     borderRadius,
     dimensions,
+    fontFamilies,
 } from '../styles';
 
 type PerformerProfilePageProps = {
@@ -98,7 +99,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
 
             {/* Social Links Container */}
             <div style={{
-                maxWidth: '500px',
+                maxWidth: '320px',
                 width: '100%',
                 margin: '48px auto 0',
                 padding: '0 20px',
@@ -106,7 +107,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                 <div style={{
                     backgroundColor: hexToRgba(colors.melodyMist, opacity.socialContainer),
                     borderRadius: `${borderRadius.socialContainer}px`,
-                    padding: `${spacing.md}px`,
+                    padding: `${spacing.sm}px`,
                 }}>
                 {sortedLinks.length === 0 ? (
                     <div style={{
@@ -120,7 +121,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: `${spacing.md}px`,
+                        gap: `${spacing.sm}px`,
                     }}>
                         {sortedLinks.map((link) => {
                             const url = buildSocialUrl(link.url, link.type);
@@ -137,9 +138,9 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexDirection: 'row',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        padding: `${spacing.sm}px`,
+                                        padding: '10px 12px',
                                         backgroundColor: hexToRgba(colors.whiteNoise, opacity.socialButton),
-                                        borderRadius: `${borderRadius.socialButton}px`,
+                                        borderRadius: `${borderRadius.medium}px`,
                                         textDecoration: 'none',
                                         cursor: 'pointer',
                                         transition: 'transform 0.2s ease',
@@ -158,20 +159,22 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexShrink: 0,
                                         color: colors.midnightCruise,
                                     }}>
-                                        <Icon size={24} />
+                                        <Icon size={20} />
                                     </div>
 
                                     {/* Handle Text */}
                                     <div style={{
                                         flex: 1,
                                         textAlign: 'center',
-                                        ...getTypographyStyle('body', 'mobile'),
+                                        fontSize: '15px',
                                         fontWeight: 600,
+                                        fontFamily: fontFamilies.poppins,
+                                        lineHeight: '1.2',
                                         color: colors.midnightCruise,
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
-                                        padding: `0 ${spacing.sm}px`,
+                                        padding: '0 10px',
                                         minWidth: 0, // Allow flex item to shrink below content size
                                     }}>
                                         {link.url}
@@ -184,7 +187,7 @@ export function PerformerProfilePage({ participants }: PerformerProfilePageProps
                                         flexShrink: 0,
                                         color: hexToRgba(colors.midnightCruise, opacity.arrow),
                                     }}>
-                                        <ChevronRight size={20} />
+                                        <ChevronRight size={18} />
                                     </div>
                                 </a>
                             );

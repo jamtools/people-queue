@@ -327,7 +327,8 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
     app.registerRoute('/queue', {}, () => {
         const allParticipants = states.allParticipants.useState();
         const queuedParticipantIds = states.queuedParticipantIds.useState();
-        return <QueueListPage allParticipants={allParticipants} queuedParticipantIds={queuedParticipantIds} />;
+        const currentPerformerId = states.currentPerformerId.useState();
+        return <QueueListPage allParticipants={allParticipants} queuedParticipantIds={queuedParticipantIds} currentPerformerId={currentPerformerId} />;
     });
 
     return {};

@@ -1,14 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
+import { ChevronRight } from 'lucide-react';
 import { Participant } from '../types';
 import { BackgroundLayout } from '../components/BackgroundLayout';
+import { colors, hexToRgba, opacity, borderRadius, spacing } from '../styles';
 
 type QueueListPageProps = {
     allParticipants: Participant[];
     queuedParticipantIds: string[];
+    currentPerformerId: string | null;
 };
 
-export function QueueListPage({ allParticipants, queuedParticipantIds }: QueueListPageProps) {
+export function QueueListPage({ allParticipants, queuedParticipantIds, currentPerformerId }: QueueListPageProps) {
     const navigate = useNavigate();
 
     // Get queued participants in order
@@ -16,12 +19,16 @@ export function QueueListPage({ allParticipants, queuedParticipantIds }: QueueLi
         .map(id => allParticipants.find(p => p.id === id))
         .filter((p): p is Participant => p !== undefined);
 
+    const currentPerformer = currentPerformerId
+        ? allParticipants.find(p => p.id === currentPerformerId)
+        : null;
+
     return (
         <BackgroundLayout>
             <div style={{
-                maxWidth: '600px',
+                maxWidth: '100%',
                 margin: '0 auto',
-                padding: '40px 20px',
+                padding: '40px 16px',
                 minHeight: '100vh',
                 display: 'flex',
                 flexDirection: 'column'
@@ -51,7 +58,7 @@ export function QueueListPage({ allParticipants, queuedParticipantIds }: QueueLi
                     fontSize: '32px',
                     fontWeight: 'bold',
                     marginBottom: '8px',
-                    color: 'white',
+                    color: colors.whiteNoise,
                     textAlign: 'center'
                 }}>
                     Performance Queue
@@ -59,19 +66,35 @@ export function QueueListPage({ allParticipants, queuedParticipantIds }: QueueLi
 
                 <p style={{
                     fontSize: '16px',
-                    color: 'rgba(255, 255, 255, 0.9)',
+                    color: hexToRgba(colors.whiteNoise, 0.9),
                     textAlign: 'center',
-                    marginBottom: '32px'
+                    marginBottom: '8px'
                 }}>
                     {queuedParticipants.length} {queuedParticipants.length === 1 ? 'performer' : 'performers'} in queue
                 </p>
+
+                {currentPerformer && (
+                    <p style={{
+                        fontSize: '14px',
+                        color: hexToRgba(colors.whiteNoise, 0.8),
+                        textAlign: 'center',
+                        marginBottom: '32px',
+                        fontStyle: 'italic'
+                    }}>
+                        Now performing: {currentPerformer.name}
+                    </p>
+                )}
+
+                {!currentPerformer && (
+                    <div style={{ marginBottom: '24px' }} />
+                )}
 
                 {queuedParticipants.length === 0 ? (
                     <div style={{
                         padding: '40px 20px',
                         textAlign: 'center',
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        borderRadius: '8px',
+                        backgroundColor: hexToRgba(colors.whiteNoise, 0.9),
+                        borderRadius: `${borderRadius.socialContainer}px`,
                         marginBottom: '24px'
                     }}>
                         <p style={{
@@ -84,87 +107,80 @@ export function QueueListPage({ allParticipants, queuedParticipantIds }: QueueLi
                     </div>
                 ) : (
                     <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '12px',
+                        backgroundColor: hexToRgba(colors.melodyMist, opacity.socialContainer),
+                        borderRadius: `${borderRadius.socialContainer}px`,
+                        padding: `${spacing.sm}px`,
                         marginBottom: '40px'
                     }}>
-                        {queuedParticipants.map((participant, index) => (
-                            <a
-                                key={participant.id}
-                                href={`/performer/${participant.id}`}
-                                style={{
-                                    display: 'block',
-                                    padding: '20px',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                    borderRadius: '8px',
-                                    textDecoration: 'none',
-                                    transition: 'all 0.2s ease',
-                                    border: '2px solid transparent'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
-                                    e.currentTarget.style.borderColor = '#1976d2';
-                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-                                    e.currentTarget.style.borderColor = 'transparent';
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                }}
-                            >
-                                <div style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '16px'
-                                }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: `${spacing.sm}px`
+                        }}>
+                            {queuedParticipants.map((participant, index) => (
+                                <a
+                                    key={participant.id}
+                                    href={`/performer/${participant.id}`}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        padding: '12px 14px',
+                                        backgroundColor: hexToRgba(colors.whiteNoise, opacity.socialButton),
+                                        borderRadius: `${borderRadius.medium}px`,
+                                        textDecoration: 'none',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1.02)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1)';
+                                    }}
+                                >
+                                    {/* Position Number */}
                                     <div style={{
-                                        fontSize: '24px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        flexShrink: 0,
+                                        color: colors.midnightCruise,
+                                        fontSize: '20px',
                                         fontWeight: 'bold',
-                                        color: '#1976d2',
-                                        minWidth: '40px'
+                                        minWidth: '32px'
                                     }}>
                                         {index + 1}
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{
-                                            fontSize: '20px',
-                                            fontWeight: 'bold',
-                                            color: '#333',
-                                            marginBottom: '4px'
-                                        }}>
-                                            {participant.name}
-                                        </div>
-                                        {participant.description && (
-                                            <div style={{
-                                                fontSize: '14px',
-                                                color: '#666',
-                                                fontStyle: 'italic'
-                                            }}>
-                                                {participant.description}
-                                            </div>
-                                        )}
-                                        {participant.socialLinks.length > 0 && (
-                                            <div style={{
-                                                fontSize: '13px',
-                                                color: '#999',
-                                                marginTop: '4px'
-                                            }}>
-                                                {participant.socialLinks.length} social link{participant.socialLinks.length !== 1 ? 's' : ''}
-                                            </div>
-                                        )}
-                                    </div>
+
+                                    {/* Performer Name */}
                                     <div style={{
-                                        fontSize: '24px',
-                                        color: '#1976d2'
+                                        flex: 1,
+                                        textAlign: 'center',
+                                        fontSize: '16px',
+                                        fontWeight: 600,
+                                        lineHeight: '1.2',
+                                        color: colors.midnightCruise,
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        padding: '0 12px',
+                                        minWidth: 0
                                     }}>
-                                        →
+                                        {participant.name}
                                     </div>
-                                </div>
-                            </a>
-                        ))}
+
+                                    {/* Chevron Arrow */}
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        flexShrink: 0,
+                                        color: hexToRgba(colors.midnightCruise, opacity.arrow)
+                                    }}>
+                                        <ChevronRight size={24} />
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

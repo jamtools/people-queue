@@ -39,6 +39,9 @@ RUN npm rebuild better-sqlite3
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
 
+# Copy assets directory
+COPY --from=builder /app/assets ./assets
+
 # Expose port
 EXPOSE 3000
 

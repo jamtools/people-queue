@@ -17,6 +17,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.1)
+      '@hono/node-server':
+        specifier: ^1.19.8
+        version: 1.19.8(hono@4.10.8)
       '@springboardjs/platforms-browser':
         specifier: 0.16.0
         version: 0.16.0(react-router-dom@6.30.2(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(springboard@0.16.0(immer@10.2.0)(json-rpc-2.0@1.7.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(rxjs@7.8.2))
@@ -250,8 +253,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hono/node-server@1.19.7':
-    resolution: {integrity: sha512-vUcD0uauS7EU2caukW8z5lJKtoGMokxNbJtBiwHgpqxEXokaHCBkQUmCHhjFB1VUTWdqj25QoMkMKzgjq+uhrw==}
+  '@hono/node-server@1.19.8':
+    resolution: {integrity: sha512-0/g2lIOPzX8f3vzW1ggQgvG5mjtFBDBHFAzI5SFAi2DzSqS9luJwqg9T6O/gKYLi+inS7eNxBeIFkkghIPvrMA==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
@@ -1097,13 +1100,13 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@hono/node-server@1.19.7(hono@4.10.8)':
+  '@hono/node-server@1.19.8(hono@4.10.8)':
     dependencies:
       hono: 4.10.8
 
-  '@hono/node-ws@1.2.0(@hono/node-server@1.19.7(hono@4.10.8))(hono@4.10.8)':
+  '@hono/node-ws@1.2.0(@hono/node-server@1.19.8(hono@4.10.8))(hono@4.10.8)':
     dependencies:
-      '@hono/node-server': 1.19.7(hono@4.10.8)
+      '@hono/node-server': 1.19.8(hono@4.10.8)
       hono: 4.10.8
       ws: 8.18.3
     transitivePeerDependencies:
@@ -1735,8 +1738,8 @@ snapshots:
 
   springboard-server@0.16.0(@springboardjs/data-storage@0.16.0(kysely@0.28.8))(@springboardjs/platforms-node@0.16.0(isomorphic-ws@4.0.1(ws@8.18.3))(springboard@0.16.0(immer@10.2.0)(json-rpc-2.0@1.7.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(rxjs@7.8.2))(ws@8.18.3))(hono@4.10.8)(springboard@0.16.0(immer@10.2.0)(json-rpc-2.0@1.7.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(rxjs@7.8.2)):
     dependencies:
-      '@hono/node-server': 1.19.7(hono@4.10.8)
-      '@hono/node-ws': 1.2.0(@hono/node-server@1.19.7(hono@4.10.8))(hono@4.10.8)
+      '@hono/node-server': 1.19.8(hono@4.10.8)
+      '@hono/node-ws': 1.2.0(@hono/node-server@1.19.8(hono@4.10.8))(hono@4.10.8)
       '@springboardjs/data-storage': 0.16.0(kysely@0.28.8)
       '@springboardjs/platforms-node': 0.16.0(isomorphic-ws@4.0.1(ws@8.18.3))(springboard@0.16.0(immer@10.2.0)(json-rpc-2.0@1.7.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(rxjs@7.8.2))(ws@8.18.3)
       hono: 4.10.8

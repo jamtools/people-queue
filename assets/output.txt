@@ -1,0 +1,126 @@
+People Q
+Design Mockup & Comments by Suzanne Schneider
+
+Fonts
+
+Both fonts are available via Google Fonts and are fully HTML-compatible.
+Headers (Fredoka – Semi-Bold):
+●​ Use only two size variants:
+○​ Primary: Band Name (single line)
+○​ Secondary: Band Name (two lines / long names)
+●​ The two-line version should be approximately 50px smaller than the single-line version.
+●​ These are the only Fredoka sizes used in the application. Do not introduce additional
+sizes.
+●​ Google Fonts Link
+Body Copy (Poppins):
+●​ Use three size variants total.
+●​ Use two weights: medium and bold.
+●​ Bold is reserved for higher-priority body text.
+
+●​ Once sizes are chosen to match the mockups, reuse them consistently across all
+screens.
+●​ Google Fonts Link
+All text must remain clearly legible from a distance on large projected screens.
+
+Color Usage:
+
+The interface uses five colors from the SongDrive brand palette.
+●​
+●​
+●​
+●​
+
+White Noise: Primary text color (used most frequently)
+Midnight Cruise: Accent text color for emphasis
+Bridge Drop & Melody Mist: Accent/background colors (used only where specified)
+Cloud Sync: Reserved exclusively for the SongDrive logo on select screens
+
+Please avoid introducing additional colors outside this palette unless explicitly noted.
+​
+​
+
+Background:
+
+All screens use the same provided SVG background.
+●​ The SVG should scale responsively to all screen sizes and aspect ratios.
+●​ Do not rasterize the background.
+●​ For mobile layouts, the same SVG is used but rotated 90 degrees.
+No additional background variations should be introduced.
+
+Welcome Screen
+
+This screen is displayed before the event begins.
+●​ Use the provided welcome.svg file.
+●​ All text on this screen is static and baked into the SVG.
+●​ No live or dynamic text is required here.
+
+QR Code Screen
+
+This screen contains two QR codes:
+1.​ Google Form (sign-up)
+2.​ SongDrive workspace (upload backing tracks / demos)
+Implementation notes:
+●​ All text and QR codes (except the background) should be live.
+●​ Each QR code must be placed inside a white container with its description above it.
+●​ Descriptions appear above, not below, the QR codes to ensure users understand the
+action before scanning.
+●​ The QR codes on this screen should be larger than QR codes used elsewhere in the
+program.
+●​ QR codes should not be centered too closely together — leave generous spacing.
+Help Text:
+
+●​ The “Need Help Uploading?” message should be toggleable (on/off).
+●​ This screen may be displayed at any time during the event.
+Purpose: Reduce verbal instructions and allow audience members to self-navigate.
+
+Band Name / QR Code
+
+Two layout examples are shown:
+●​ Short band name (one line)
+●​ Long band name (two lines)
+Rules:
+●​ All elements remain identical between layouts except:
+○​ Band name line breaks
+○​ Slightly reduced font size and tighter line spacing for long names
+●​ The goal is for long names to occupy approximately the same visual space as short
+names.
+Additional notes:
+●​ The SongDrive logo should appear in the bottom left, with safe margins to prevent
+cropping.
+●​ The band name should visually align with the QR code to guide the viewer’s eye
+naturally.
+●​ The Band name should be vertically aligned
+●​ Do not include social icons or handles on this screen.
+●​ The QR code description is intentionally not bold.
+●​ “Now Performing!” is the biggest size of Poppins
+●​ Description is limited to 1 line and uses a smaller Poppins size
+Visual priority order:
+1.​ Band name
+2.​ QR code
+3.​ QR description
+
+Mobile Interface:
+
+Long band names follow the same rules as the stage display:
+●​ Slightly smaller font
+●​ Reduced line spacing
+●​ Same overall visual weight
+Social Link Buttons:
+●​
+●​
+●​
+●​
+
+Buttons are grouped within a background container using Melody Mist at ~25% opacity.
+Individual buttons are White Noise at ~88% opacity.
+All icons, text, and arrows use Midnight Cruise.
+Arrow icons should have slightly reduced opacity (~90%) to indicate navigation.
+
+Constraints:
+●​ Limit bands to three links maximum.
+●​ Use platform logos only (no app icon backgrounds).
+
+●​ Maintain consistent button sizing and spacing.
+The Band Name and SongDrive branding should remain the strongest visual elements.
+
+

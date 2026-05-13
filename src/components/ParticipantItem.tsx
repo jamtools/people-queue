@@ -387,9 +387,7 @@ export function ParticipantItem({
                                         <button
                                             onClick={() => {
                                                 setShowMenu(false);
-                                                if (confirm('Remove this participant from the queue?')) {
-                                                    actions.removeFromQueue({ id: participant.id });
-                                                }
+                                                actions.removeFromQueue({ id: participant.id });
                                             }}
                                             style={{
                                                 width: '100%',

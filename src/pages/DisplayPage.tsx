@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router';
 import { Participant } from '../types';
 import { BackgroundLayout } from '../components/BackgroundLayout';
 import { QRCodeDisplay } from '../components/QRCodeDisplay';
+import { buildSocialUrl, getPlatformIcon } from '../utils/socialLinks';
 import {
     colors,
     getTypographyStyle,
@@ -30,6 +31,12 @@ type DisplayPageProps = {
 export function DisplayPage({ participants, currentPerformerId }: DisplayPageProps) {
     const navigate = useNavigate();
     const currentPerformer = participants.find(p => p.id === currentPerformerId);
+    const socialLinks = currentPerformer
+        ? [...currentPerformer.socialLinks]
+            .filter(link => link.url.trim().length > 0)
+            .sort((a, b) => a.order - b.order)
+            .slice(0, 3)
+        : [];
 
     // Generate QR code URL for performer profile
     const getPerformerQRUrl = (performer: Participant): string => {
@@ -142,6 +149,65 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     >
                         {currentPerformer.name}
                     </div>
+
+                    {/* Social links (if provided) */}
+                    {socialLinks.length > 0 && (
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: `${spacing.sm}px`,
+                                alignItems: 'center',
+                            }}
+                        >
+                            {socialLinks.map((link) => {
+                                const Icon = getPlatformIcon(link.type);
+                                const url = buildSocialUrl(link.url, link.type);
+
+                                return (
+                                    <a
+                                        key={link.id}
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            ...getTypographyStyle('socialHandle', 'kiosk'),
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: `${spacing.xs}px`,
+                                            maxWidth: '420px',
+                                            padding: '10px 16px',
+                                            color: colors.whiteNoise,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.18)',
+                                            border: '1px solid rgba(255, 255, 255, 0.34)',
+                                            borderRadius: '999px',
+                                            textDecoration: 'none',
+                                            overflow: 'hidden',
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                flexShrink: 0,
+                                            }}
+                                        >
+                                            <Icon size={34} />
+                                        </span>
+                                        <span
+                                            style={{
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            {link.url}
+                                        </span>
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    )}
 
                     {/* Description (if exists) */}
                     {currentPerformer.description && (

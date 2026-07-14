@@ -181,3 +181,40 @@ export function getBandNameStyle(
   const variant = isLongBandName(name) ? 'bandNameLong' : 'bandNameShort';
   return getTypographyStyle(variant, context);
 }
+
+/**
+ * Get kiosk-safe performer name typography that preserves the large display
+ * feel while preventing very long names from consuming the whole stage view.
+ */
+export function getKioskPerformerNameStyle(name: string): CSSProperties {
+  const length = Array.from(name).length;
+
+  const baseStyle: CSSProperties = {
+    ...getBandNameStyle(name, 'kiosk'),
+    maxWidth: '100%',
+    overflow: 'hidden',
+    overflowWrap: 'anywhere',
+    wordBreak: 'break-word',
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 3,
+  };
+
+  if (length > 60) {
+    return {
+      ...baseStyle,
+      fontSize: 'clamp(48px, 4.2vw, 72px)',
+      lineHeight: '1.02',
+    };
+  }
+
+  if (length > 38) {
+    return {
+      ...baseStyle,
+      fontSize: 'clamp(56px, 5vw, 84px)',
+      lineHeight: '1.03',
+    };
+  }
+
+  return baseStyle;
+}

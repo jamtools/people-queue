@@ -16,7 +16,7 @@ import { buildSocialUrl, getPlatformIcon } from '../utils/socialLinks';
 import {
     colors,
     getTypographyStyle,
-    getBandNameStyle,
+    getKioskPerformerNameStyle,
     spacing,
     safeZones,
     qrSizes,
@@ -109,6 +109,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
         <BackgroundLayout>
             {/* Main content container - flexbox left/right split */}
             <div
+                data-testid="kiosk-display"
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -116,16 +117,21 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     minHeight: '100vh',
                     padding: `${safeZones.kiosk.top}px ${safeZones.kiosk.right}px ${safeZones.kiosk.bottom}px ${safeZones.kiosk.left}px`,
                     gap: `${spacing.xxxl}px`,
+                    boxSizing: 'border-box',
                 }}
             >
                 {/* Left side - Text content */}
                 <div
+                    data-testid="performer-content"
                     style={{
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         gap: `${spacing.lg}px`,
                         minWidth: 0, // Allow flex item to shrink
+                        maxWidth: `calc(100vw - ${safeZones.kiosk.left + safeZones.kiosk.right + qrSizes.display + (dimensions.qrContainerPadding * 2) + spacing.xxxl}px)`,
+                        maxHeight: `calc(100vh - ${safeZones.kiosk.top + safeZones.kiosk.bottom}px)`,
+                        overflow: 'hidden',
                     }}
                 >
                     {/* "Now Performing!" heading */}
@@ -140,11 +146,10 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
 
                     {/* Band/Artist Name */}
                     <div
+                        data-testid="performer-name"
                         style={{
-                            ...getBandNameStyle(currentPerformer.name, 'kiosk'),
+                            ...getKioskPerformerNameStyle(currentPerformer.name),
                             color: colors.whiteNoise,
-                            wordWrap: 'break-word',
-                            overflowWrap: 'break-word',
                         }}
                     >
                         {currentPerformer.name}
@@ -153,6 +158,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     {/* Social links (if provided) */}
                     {socialLinks.length > 0 && (
                         <div
+                            data-testid="performer-social-links"
                             style={{
                                 display: 'flex',
                                 flexWrap: 'wrap',
@@ -229,6 +235,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
 
                 {/* Right side - QR Code */}
                 <div
+                    data-testid="performer-qr"
                     style={{
                         flexShrink: 0,
                     }}

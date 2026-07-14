@@ -54,6 +54,8 @@ export function ParticipantItem({
 
     return (
         <div
+            data-testid="participant-item"
+            data-participant-name={participant.name}
             style={{
                 border: isCurrentPerformer ? '2px solid #1976d2' : '1px solid #ddd',
                 borderRadius: '8px',

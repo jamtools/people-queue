@@ -8,7 +8,9 @@
     "dev": "sb dev src/index.tsx",
     "build": "sb build src/index.tsx",
     "start": "sb start",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +33,7 @@
     "springboard-server": "0.16.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/node": "^25.0.0",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.7",

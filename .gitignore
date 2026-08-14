@@ -3,3 +3,6 @@ dist
 data/kv_data.json
 assets/*.png
 !assets/cloud_gradient_logo.png
+
+test-results
+playwright-report

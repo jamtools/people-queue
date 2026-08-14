@@ -47,6 +47,7 @@ export function BackstagePage({
     const [syncStatus, setSyncStatus] = useState<string | null>(null);
     const [manualName, setManualName] = useState('');
     const [manualDescription, setManualDescription] = useState('');
+    const [manualNotes, setManualNotes] = useState('');
     const [manualLinks, setManualLinks] = useState<any[]>([]);
 
     // Auto-refresh effect
@@ -96,6 +97,7 @@ export function BackstagePage({
         await actions.addManualParticipant({
             name: manualName.trim(),
             description: manualDescription.trim() || undefined,
+            notes: manualNotes.trim() || undefined,
             socialLinks: manualLinks,
             addToQueue: false, // Don't add to queue automatically - must be done manually
         });
@@ -103,6 +105,7 @@ export function BackstagePage({
         // Clear form
         setManualName('');
         setManualDescription('');
+        setManualNotes('');
         setManualLinks([]);
     };
 
@@ -186,16 +189,11 @@ export function BackstagePage({
                         No participants in queue yet. Add people from the "All Signed Up" section below.
                     </div>
                 ) : (
-                    queuedParticipants.map((participant, index) => (
-                        <ParticipantItem
-                            key={participant.id}
-                            participant={participant}
-                            index={index}
-                            currentPerformerId={currentPerformerId}
-                            isInQueue={true}
-                            actions={actions}
-                        />
-                    ))
+                    <QueueManager
+                        participants={queuedParticipants}
+                        currentPerformerId={currentPerformerId}
+                        actions={actions}
+                    />
                 )}
             </div>
 
@@ -398,6 +396,27 @@ export function BackstagePage({
                                 fontSize: '14px',
                                 resize: 'vertical',
                                 fontFamily: 'inherit'
+                            }}
+                        />
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
+                            Backstage Notes (Internal Only)
+                        </label>
+                        <textarea
+                            value={manualNotes}
+                            onChange={(e) => setManualNotes(e.target.value)}
+                            placeholder="Notes for backstage use only..."
+                            rows={3}
+                            style={{
+                                width: '100%',
+                                padding: '8px',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                fontSize: '14px',
+                                resize: 'vertical',
+                                fontFamily: 'inherit',
+                                backgroundColor: '#fffbf0'
                             }}
                         />
                     </div>

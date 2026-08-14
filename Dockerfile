@@ -29,6 +29,11 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
+# better-sqlite3 may fall back to a native node-gyp rebuild on Alpine.
+# Keep the build toolchain available so the runtime install/rebuild is
+# deterministic when a prebuilt binary is unavailable.
+RUN apk add --no-cache python3 make g++
+
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 

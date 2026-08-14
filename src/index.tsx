@@ -214,7 +214,7 @@ async function createResources(app: ModuleAPI) {
             return {};
         },
 
-        addManualParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[]; addToQueue?: boolean }) => {
+        addManualParticipant: async (args: { name: string; description?: string; notes?: string; socialLinks: SocialLink[]; addToQueue?: boolean }) => {
             // Enforce 3-link maximum (take first 3 if more provided)
             const validatedSocialLinks = args.socialLinks.slice(0, 3);
 
@@ -222,6 +222,7 @@ async function createResources(app: ModuleAPI) {
                 id: `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 name: args.name,
                 description: args.description,
+                notes: args.notes,
                 socialLinks: validatedSocialLinks,
                 order: 0,
                 source: 'manual',

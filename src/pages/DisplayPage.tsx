@@ -12,10 +12,11 @@ import { useNavigate } from 'react-router';
 import { Participant } from '../types';
 import { BackgroundLayout } from '../components/BackgroundLayout';
 import { QRCodeDisplay } from '../components/QRCodeDisplay';
+import { buildSocialUrl, getPlatformIcon } from '../utils/socialLinks';
 import {
     colors,
     getTypographyStyle,
-    getBandNameStyle,
+    getKioskPerformerNameStyle,
     spacing,
     safeZones,
     qrSizes,
@@ -30,6 +31,12 @@ type DisplayPageProps = {
 export function DisplayPage({ participants, currentPerformerId }: DisplayPageProps) {
     const navigate = useNavigate();
     const currentPerformer = participants.find(p => p.id === currentPerformerId);
+    const socialLinks = currentPerformer
+        ? [...currentPerformer.socialLinks]
+            .filter(link => link.url.trim().length > 0)
+            .sort((a, b) => a.order - b.order)
+            .slice(0, 3)
+        : [];
 
     // Generate QR code URL for performer profile
     const getPerformerQRUrl = (performer: Participant): string => {
@@ -102,6 +109,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
         <BackgroundLayout>
             {/* Main content container - flexbox left/right split */}
             <div
+                data-testid="kiosk-display"
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -109,16 +117,21 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     minHeight: '100vh',
                     padding: `${safeZones.kiosk.top}px ${safeZones.kiosk.right}px ${safeZones.kiosk.bottom}px ${safeZones.kiosk.left}px`,
                     gap: `${spacing.xxxl}px`,
+                    boxSizing: 'border-box',
                 }}
             >
                 {/* Left side - Text content */}
                 <div
+                    data-testid="performer-content"
                     style={{
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         gap: `${spacing.lg}px`,
                         minWidth: 0, // Allow flex item to shrink
+                        maxWidth: `calc(100vw - ${safeZones.kiosk.left + safeZones.kiosk.right + qrSizes.display + (dimensions.qrContainerPadding * 2) + spacing.xxxl}px)`,
+                        maxHeight: `calc(100vh - ${safeZones.kiosk.top + safeZones.kiosk.bottom}px)`,
+                        overflow: 'hidden',
                     }}
                 >
                     {/* "Now Performing!" heading */}
@@ -133,15 +146,74 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
 
                     {/* Band/Artist Name */}
                     <div
+                        data-testid="performer-name"
                         style={{
-                            ...getBandNameStyle(currentPerformer.name, 'kiosk'),
+                            ...getKioskPerformerNameStyle(currentPerformer.name),
                             color: colors.whiteNoise,
-                            wordWrap: 'break-word',
-                            overflowWrap: 'break-word',
                         }}
                     >
                         {currentPerformer.name}
                     </div>
+
+                    {/* Social links (if provided) */}
+                    {socialLinks.length > 0 && (
+                        <div
+                            data-testid="performer-social-links"
+                            style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: `${spacing.sm}px`,
+                                alignItems: 'center',
+                            }}
+                        >
+                            {socialLinks.map((link) => {
+                                const Icon = getPlatformIcon(link.type);
+                                const url = buildSocialUrl(link.url, link.type);
+
+                                return (
+                                    <a
+                                        key={link.id}
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            ...getTypographyStyle('socialHandle', 'kiosk'),
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: `${spacing.xs}px`,
+                                            maxWidth: '420px',
+                                            padding: '10px 16px',
+                                            color: colors.whiteNoise,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.18)',
+                                            border: '1px solid rgba(255, 255, 255, 0.34)',
+                                            borderRadius: '999px',
+                                            textDecoration: 'none',
+                                            overflow: 'hidden',
+                                        }}
+                                    >
+                                        <span
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                flexShrink: 0,
+                                            }}
+                                        >
+                                            <Icon size={34} />
+                                        </span>
+                                        <span
+                                            style={{
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            {link.url}
+                                        </span>
+                                    </a>
+                                );
+                            })}
+                        </div>
+                    )}
 
                     {/* Description (if exists) */}
                     {currentPerformer.description && (
@@ -163,6 +235,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
 
                 {/* Right side - QR Code */}
                 <div
+                    data-testid="performer-qr"
                     style={{
                         flexShrink: 0,
                     }}

@@ -3,29 +3,24 @@ import { expect, test, type Page, type TestInfo } from '@playwright/test';
 type PerformerCase = {
   slug: string;
   name: string;
-  description: string;
 };
 
 const performerCases: PerformerCase[] = [
   {
     slug: 'normal-name',
     name: 'Maya Stone',
-    description: 'Normal-length names should keep the large kiosk layout.',
   },
   {
     slug: 'long-spaced-name',
     name: 'The Extremely Long Experimental Folk Collective',
-    description: 'Long names with spaces should wrap safely beside the QR code.',
   },
   {
     slug: 'long-single-token-name',
     name: 'SupercalifragilisticexpialidociousDreamwaveOrchestraCollective',
-    description: 'Long unbroken names should break and stay inside the text column.',
   },
   {
     slug: 'extreme-name',
     name: 'A Very Very Very Very Very Long Performer Name That Used To Break The Kiosk Layout',
-    description: 'Extreme names should clamp before colliding with the QR code.',
   },
 ];
 
@@ -35,7 +30,6 @@ async function addPerformerAndSetCurrent(page: Page, performer: PerformerCase) {
 
   const uniqueName = `${performer.name} ${Date.now()}`;
   await page.getByPlaceholder('Participant name').fill(uniqueName);
-  await page.getByPlaceholder('What instruments/style will you be performing? (optional)').last().fill(performer.description);
 
   await page.getByRole('button', { name: 'Add Link' }).click();
   await page.getByPlaceholder('username or URL').last().fill(`social-${performer.slug}`);

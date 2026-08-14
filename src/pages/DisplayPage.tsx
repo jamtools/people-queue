@@ -132,6 +132,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                         maxWidth: `calc(100vw - ${safeZones.kiosk.left + safeZones.kiosk.right + qrSizes.display + (dimensions.qrContainerPadding * 2) + spacing.xxxl}px)`,
                         maxHeight: `calc(100vh - ${safeZones.kiosk.top + safeZones.kiosk.bottom}px)`,
                         overflow: 'hidden',
+                        transform: 'translateY(clamp(-96px, -7vh, -56px))',
                     }}
                 >
                     {/* "Now Performing!" heading */}
@@ -181,7 +182,8 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: `${spacing.xs}px`,
-                                            maxWidth: '420px',
+                                            maxWidth: 'min(640px, 100%)',
+                                            minWidth: 0,
                                             padding: '10px 16px',
                                             color: colors.whiteNoise,
                                             backgroundColor: 'rgba(255, 255, 255, 0.18)',
@@ -205,6 +207,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap',
+                                                minWidth: 0,
                                             }}
                                         >
                                             {link.url}

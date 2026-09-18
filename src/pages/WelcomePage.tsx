@@ -37,7 +37,7 @@ export function WelcomePage() {
             display: 'block',
           }}
         />
-        <SignupQrBadge label="Signup" />
+        <SignupQrBadge label="Signup!" />
       </div>
     </BackgroundLayout>
   );

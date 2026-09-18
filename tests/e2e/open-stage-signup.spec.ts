@@ -48,6 +48,13 @@ test('Open Stage thank-you screen can start another signup', async ({ page }) =>
 test('kiosk welcome screen includes a compact QR link to signup', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('signup-qr-badge')).toBeVisible();
-  await expect(page.getByText('Signup')).toBeVisible();
+  await expect(page.getByTestId('signup-qr-badge-label')).toHaveText('Signup!');
   await expect(page.getByText('/signup')).toHaveCount(0);
+
+  const labelBox = await page.getByTestId('signup-qr-badge-label').boundingBox();
+  const canvasBox = await page.getByTestId('signup-qr-badge-canvas').boundingBox();
+  expect(labelBox, 'signup QR label should be measurable').not.toBeNull();
+  expect(canvasBox, 'signup QR canvas should be measurable').not.toBeNull();
+  if (!labelBox || !canvasBox) return;
+  expect(labelBox.y + labelBox.height, 'signup QR label should sit above the QR code').toBeLessThanOrEqual(canvasBox.y);
 });

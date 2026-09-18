@@ -271,7 +271,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     }}
                 />
             </div>
-            <SignupQrBadge label="Signup" />
+            <SignupQrBadge label="Signup!" />
         </BackgroundLayout>
     );
 }

@@ -6,7 +6,7 @@ type SignupQrBadgeProps = {
     label?: string;
 };
 
-export function SignupQrBadge({ label = 'Sign up' }: SignupQrBadgeProps) {
+export function SignupQrBadge({ label = 'Signup!' }: SignupQrBadgeProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const signupUrl = useMemo(() => {
         if (typeof window === 'undefined') return '/signup';
@@ -38,8 +38,9 @@ export function SignupQrBadge({ label = 'Sign up' }: SignupQrBadgeProps) {
                 bottom: `${safeZones.kiosk.bottom}px`,
                 zIndex: 5,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                gap: '12px',
+                gap: '8px',
                 padding: '12px 14px',
                 backgroundColor: 'rgba(255, 255, 255, 0.94)',
                 color: colors.bridgeDrop,
@@ -49,7 +50,19 @@ export function SignupQrBadge({ label = 'Sign up' }: SignupQrBadgeProps) {
                 fontFamily: fontFamilies.poppins,
             }}
         >
+            <div
+                data-testid="signup-qr-badge-label"
+                style={{
+                    fontSize: '18px',
+                    lineHeight: 1.1,
+                    fontWeight: 800,
+                    textAlign: 'center',
+                }}
+            >
+                {label}
+            </div>
             <canvas
+                data-testid="signup-qr-badge-canvas"
                 ref={canvasRef}
                 width={92}
                 height={92}
@@ -60,18 +73,6 @@ export function SignupQrBadge({ label = 'Sign up' }: SignupQrBadgeProps) {
                     borderRadius: `${borderRadius.small}px`,
                 }}
             />
-            <div style={{ minWidth: '76px' }}>
-                <div
-                    style={{
-                        fontSize: '18px',
-                        lineHeight: 1.1,
-                        fontWeight: 800,
-                        marginBottom: '4px',
-                    }}
-                >
-                    {label}
-                </div>
-            </div>
         </aside>
     );
 }

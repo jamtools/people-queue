@@ -4,7 +4,7 @@
  * Displays the currently performing artist with their name, description (if any),
  * and a QR code for audience members to scan and connect.
  *
- * Layout: Left/right split with text on left, QR code on right, logo bottom left
+ * Layout: Left/right split with text on left, QR code pulled inward from right, logo bottom left
  */
 
 import React from 'react';
@@ -241,6 +241,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     data-testid="performer-qr"
                     style={{
                         flexShrink: 0,
+                        marginRight: 'clamp(96px, 7vw, 160px)',
                     }}
                 >
                     <QRCodeDisplay

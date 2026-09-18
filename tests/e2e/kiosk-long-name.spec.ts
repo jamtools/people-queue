@@ -54,6 +54,7 @@ async function addPerformerAndSetCurrent(page: Page, performer: PerformerCase) {
 }
 
 async function expectDisplayLayoutIsSafe(page: Page, testInfo: TestInfo, slug: string) {
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto('/display');
   await expect(page.getByTestId('kiosk-display')).toBeVisible();
   await expect(page.getByTestId('performer-name')).toBeVisible();
@@ -77,6 +78,8 @@ async function expectDisplayLayoutIsSafe(page: Page, testInfo: TestInfo, slug: s
 
   if (!contentBox || !nameBox || !socialBox || !qrBox) return;
 
+  expect(contentBox.x, 'performer text should stay anchored to the left kiosk safe zone').toBeLessThanOrEqual(64);
+  expect(qrBox.x + qrBox.width, 'QR column should be pulled inward from the right safe-zone edge').toBeLessThanOrEqual(1780);
   expect(contentBox.x + contentBox.width, 'text column must not overlap QR column').toBeLessThanOrEqual(qrBox.x);
   expect(nameBox.x + nameBox.width, 'performer name must not overlap QR column').toBeLessThanOrEqual(qrBox.x);
   expect(socialBox.x + socialBox.width, 'social links must not overlap QR column').toBeLessThanOrEqual(qrBox.x);

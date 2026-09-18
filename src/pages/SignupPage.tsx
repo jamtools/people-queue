@@ -51,6 +51,33 @@ const sectionStyle: CSSProperties = {
     backgroundColor: hexToRgba(colors.whiteNoise, 0.84),
 };
 
+const primaryButtonStyle: CSSProperties = {
+    minHeight: '52px',
+    padding: '14px 22px',
+    border: 'none',
+    borderRadius: `${borderRadius.medium}px`,
+    backgroundColor: colors.midnightCruise,
+    color: colors.whiteNoise,
+    cursor: 'pointer',
+    fontSize: '17px',
+    fontWeight: 900,
+    fontFamily: fontFamilies.poppins,
+    boxShadow: '0 10px 22px rgba(45, 44, 128, 0.18)',
+};
+
+const secondaryButtonStyle: CSSProperties = {
+    minHeight: '52px',
+    padding: '14px 22px',
+    border: `1px solid ${hexToRgba(colors.midnightCruise, 0.22)}`,
+    borderRadius: `${borderRadius.medium}px`,
+    backgroundColor: colors.whiteNoise,
+    color: colors.midnightCruise,
+    cursor: 'pointer',
+    fontSize: '17px',
+    fontWeight: 900,
+    fontFamily: fontFamilies.poppins,
+};
+
 function makeSocialLink(type: SocialLink['type'], value: string, order: number): SocialLink | null {
     const trimmed = value.trim();
     if (!trimmed) return null;
@@ -106,6 +133,12 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
         setPhotoConsent(false);
         setRecapConsent(false);
         setSongDriveUpdates('');
+    };
+
+    const handleSignUpAnotherPlayer = () => {
+        setSubmittedName(null);
+        setError(null);
+        resetForm();
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -268,62 +301,133 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                     </div>
                 </section>
 
-                <form
-                    onSubmit={handleSubmit}
-                    noValidate
-                    style={{
-                        ...sectionStyle,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: `${spacing.md}px`,
-                    }}
-                >
-                    {submittedName && (
+                {submittedName ? (
+                    <section
+                        aria-label="Signup complete"
+                        style={{
+                            ...sectionStyle,
+                            padding: 'clamp(28px, 6vw, 56px)',
+                            textAlign: 'center',
+                        }}
+                    >
                         <div
-                            role="status"
+                            aria-hidden="true"
                             style={{
-                                padding: '14px 16px',
-                                borderRadius: `${borderRadius.medium}px`,
+                                width: '72px',
+                                height: '72px',
+                                margin: '0 auto 18px',
+                                borderRadius: '999px',
+                                display: 'grid',
+                                placeItems: 'center',
                                 backgroundColor: '#ecfdf3',
                                 color: '#05603a',
                                 border: '1px solid #abefc6',
+                                fontSize: '36px',
+                                fontWeight: 900,
+                            }}
+                        >
+                            ✓
+                        </div>
+                        <h2
+                            style={{
+                                margin: '0 0 10px',
+                                color: colors.bridgeDrop,
+                                fontFamily: fontFamilies.fredoka,
+                                fontSize: 'clamp(36px, 8vw, 62px)',
+                                lineHeight: 1,
+                            }}
+                        >
+                            Thanks for signing up!
+                        </h2>
+                        <p
+                            style={{
+                                margin: '0 auto 8px',
+                                maxWidth: '620px',
+                                color: colors.bridgeDrop,
+                                fontSize: '20px',
+                                lineHeight: 1.45,
                                 fontWeight: 800,
                             }}
                         >
-                            You are in the lineup. Thanks, {submittedName}!
-                        </div>
-                    )}
-
-                    {error && (
-                        <div
-                            role="alert"
+                            {submittedName} is in the lineup.
+                        </p>
+                        <p
                             style={{
-                                padding: '14px 16px',
-                                borderRadius: `${borderRadius.medium}px`,
-                                backgroundColor: '#fef3f2',
-                                color: '#b42318',
-                                border: '1px solid #fecdca',
-                                fontWeight: 700,
+                                margin: '0 auto 28px',
+                                maxWidth: '620px',
+                                color: hexToRgba(colors.bridgeDrop, 0.72),
+                                fontSize: '16px',
+                                lineHeight: 1.55,
                             }}
                         >
-                            {error}
+                            You can add another performer from this device or check the current queue.
+                        </p>
+                        <div
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                                gap: `${spacing.sm}px`,
+                                maxWidth: '520px',
+                                margin: '0 auto',
+                            }}
+                        >
+                            <button
+                                type="button"
+                                onClick={handleSignUpAnotherPlayer}
+                                style={secondaryButtonStyle}
+                            >
+                                Sign up another player
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => navigate('/queue')}
+                                style={primaryButtonStyle}
+                            >
+                                View queue
+                            </button>
                         </div>
-                    )}
+                    </section>
+                ) : (
+                    <form
+                        onSubmit={handleSubmit}
+                        noValidate
+                        style={{
+                            ...sectionStyle,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: `${spacing.md}px`,
+                        }}
+                    >
+                        {error && (
+                            <div
+                                role="alert"
+                                style={{
+                                    padding: '14px 16px',
+                                    borderRadius: `${borderRadius.medium}px`,
+                                    backgroundColor: '#fef3f2',
+                                    color: '#b42318',
+                                    border: '1px solid #fecdca',
+                                    fontWeight: 700,
+                                }}
+                            >
+                                {error}
+                            </div>
+                        )}
 
-                    <div>
-                        <label htmlFor="signup-name" style={labelStyle}>
-                            Name (or stage name){requiredMarker()}
-                        </label>
-                        <input
-                            id="signup-name"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            style={fieldStyle}
-                            autoComplete="name"
-                            required
-                        />
-                    </div>
+                        <div>
+                            <label htmlFor="signup-name" style={labelStyle}>
+                                Name (or stage name){requiredMarker()}
+                            </label>
+                            <input
+                                id="signup-name"
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                style={fieldStyle}
+                                autoComplete="name"
+                                required
+                            />
+                        </div>
 
                     <div>
                         <label htmlFor="signup-bio" style={labelStyle}>
@@ -492,26 +596,19 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                         </div>
                     </fieldset>
 
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        style={{
-                            minHeight: '52px',
-                            padding: '14px 22px',
-                            border: 'none',
-                            borderRadius: `${borderRadius.medium}px`,
-                            backgroundColor: isSubmitting ? hexToRgba(colors.midnightCruise, 0.58) : colors.midnightCruise,
-                            color: colors.whiteNoise,
-                            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                            fontSize: '17px',
-                            fontWeight: 900,
-                            fontFamily: fontFamilies.poppins,
-                            boxShadow: '0 10px 22px rgba(45, 44, 128, 0.18)',
-                        }}
-                    >
-                        {isSubmitting ? 'Adding you…' : 'Join the lineup'}
-                    </button>
-                </form>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            style={{
+                                ...primaryButtonStyle,
+                                backgroundColor: isSubmitting ? hexToRgba(colors.midnightCruise, 0.58) : colors.midnightCruise,
+                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                            }}
+                        >
+                            {isSubmitting ? 'Adding you…' : 'Join the lineup'}
+                        </button>
+                    </form>
+                )}
 
                 {myParticipants.length > 0 && (
                     <section

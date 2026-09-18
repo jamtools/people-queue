@@ -15,7 +15,7 @@ export type Participant = {
     order: number;
     isCurrentlyPerforming?: boolean;
     notes?: string;
-    source?: 'sheets' | 'manual';
+    source?: 'sheets' | 'manual' | 'signup';
     sheetRowId?: number;
     isHere?: boolean; // Whether the performer is physically present
 };

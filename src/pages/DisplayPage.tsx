@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router';
 import { Participant } from '../types';
 import { BackgroundLayout } from '../components/BackgroundLayout';
 import { QRCodeDisplay } from '../components/QRCodeDisplay';
+import { SignupQrBadge } from '../components/SignupQrBadge';
 import { buildSocialUrl, getPlatformIcon } from '../utils/socialLinks';
 import {
     colors,
@@ -270,6 +271,7 @@ export function DisplayPage({ participants, currentPerformerId }: DisplayPagePro
                     }}
                 />
             </div>
+            <SignupQrBadge label="Join lineup" />
         </BackgroundLayout>
     );
 }

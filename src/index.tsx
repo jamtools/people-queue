@@ -34,7 +34,7 @@ async function createResources(app: ModuleAPI) {
     const myParticipantIdsState = await app.statesAPI.createUserAgentState('myParticipantIds', [] as string[]);
 
     const actions = app.createActions({
-        addParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual'; sheetRowId?: number; addToQueue?: boolean }) => {
+        addParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual' | 'signup'; sheetRowId?: number; addToQueue?: boolean }) => {
             // Enforce 3-link maximum (take first 3 if more provided)
             const validatedSocialLinks = args.socialLinks.slice(0, 3);
 
@@ -65,7 +65,7 @@ async function createResources(app: ModuleAPI) {
             return { id: newParticipant.id };
         },
 
-        updateParticipant: async (args: { id: string; name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual'; sheetRowId?: number }) => {
+        updateParticipant: async (args: { id: string; name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual' | 'signup'; sheetRowId?: number }) => {
             // Enforce 3-link maximum (take first 3 if more provided)
             const validatedSocialLinks = args.socialLinks.slice(0, 3);
 
@@ -279,6 +279,24 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
                 googleFormUrl={googleFormUrl}
                 songDriveWorkspaceUrl={songDriveWorkspaceUrl}
                 showHelpText={showHelpText}
+            />
+        );
+    });
+
+    app.registerRoute('/signup', {}, () => {
+        const allParticipants = states.allParticipants.useState();
+        const myParticipantIds = userAgentState.myParticipantIds.useState();
+        const myParticipants = allParticipants.filter((participant) => myParticipantIds.includes(participant.id));
+
+        return (
+            <SignupPage
+                actions={actions}
+                myParticipants={myParticipants}
+                onAddMyParticipantId={(id) => {
+                    userAgentState.myParticipantIds.setStateImmer((ids: string[]) => {
+                        if (!ids.includes(id)) ids.push(id);
+                    });
+                }}
             />
         );
     });

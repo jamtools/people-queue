@@ -11,6 +11,7 @@
  */
 
 import { BackgroundLayout } from '../components/BackgroundLayout';
+import { SignupQrBadge } from '../components/SignupQrBadge';
 
 export function WelcomePage() {
   return (
@@ -36,6 +37,7 @@ export function WelcomePage() {
             display: 'block',
           }}
         />
+        <SignupQrBadge label="Perform tonight" />
       </div>
     </BackgroundLayout>
   );

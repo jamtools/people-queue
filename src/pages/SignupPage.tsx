@@ -166,6 +166,12 @@ export function SignupPage({ actions }: SignupPageProps) {
         resetForm();
     };
 
+    const clearErrorOnFormChange = () => {
+        if (error) {
+            setError(null);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -359,6 +365,7 @@ export function SignupPage({ actions }: SignupPageProps) {
                 ) : (
                     <form
                         onSubmit={handleSubmit}
+                        onChange={clearErrorOnFormChange}
                         noValidate
                         style={{
                             ...sectionStyle,

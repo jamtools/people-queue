@@ -57,6 +57,25 @@ test('Open Stage signup shows validation errors at the top and bottom of the for
   await expect(page.getByTestId('signup-form-error-bottom')).toContainText(expectedError);
 });
 
+test('Open Stage signup clears validation errors when the form changes', async ({ page }) => {
+  await page.goto('/signup');
+
+  await page.getByRole('button', { name: 'Join the lineup' }).click();
+  await expect(page.getByTestId('signup-form-error-top')).toContainText('Please enter your name or stage name.');
+
+  await page.getByLabel('Name (or stage name)').fill('Corrected Artist');
+  await expect(page.getByTestId('signup-form-error-top')).toHaveCount(0);
+  await expect(page.getByTestId('signup-form-error-bottom')).toHaveCount(0);
+
+  await page.getByLabel('Tell us about yourself').fill('Acoustic folk.');
+  await page.getByRole('button', { name: 'Join the lineup' }).click();
+  await expect(page.getByTestId('signup-form-error-top')).toContainText('Please choose whether you want a private performance video.');
+
+  await page.getByLabel('No thanks').first().check();
+  await expect(page.getByTestId('signup-form-error-top')).toHaveCount(0);
+  await expect(page.getByTestId('signup-form-error-bottom')).toHaveCount(0);
+});
+
 test('kiosk welcome screen includes a compact QR link to signup', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('signup-qr-badge')).toBeVisible();

@@ -60,7 +60,7 @@ export function SignupQrBadge({ label = 'Sign up' }: SignupQrBadgeProps) {
                     borderRadius: `${borderRadius.small}px`,
                 }}
             />
-            <div style={{ minWidth: '88px' }}>
+            <div style={{ minWidth: '76px' }}>
                 <div
                     style={{
                         fontSize: '18px',
@@ -70,16 +70,6 @@ export function SignupQrBadge({ label = 'Sign up' }: SignupQrBadgeProps) {
                     }}
                 >
                     {label}
-                </div>
-                <div
-                    style={{
-                        fontSize: '15px',
-                        lineHeight: 1.2,
-                        fontWeight: 700,
-                        color: colors.midnightCruise,
-                    }}
-                >
-                    /signup
                 </div>
             </div>
         </aside>

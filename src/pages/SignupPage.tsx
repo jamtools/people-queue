@@ -243,9 +243,6 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                         View lineup
                     </button>
                     <div>
-                        <p style={{ margin: '0 0 10px', fontSize: '18px', fontWeight: 800 }}>
-                            SongDrive × Fountain Square Brew Co.
-                        </p>
                         <h1
                             style={{
                                 margin: '0 0 12px',
@@ -257,49 +254,8 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                         >
                             Open Stage Night
                         </h1>
-                        <p style={{ margin: 0, maxWidth: '760px', fontSize: '18px', lineHeight: 1.55, fontWeight: 500 }}>
-                            Calling all Indy musicians. Perform a song, test a new idea, or just come hang and enjoy the music with
-                            SongDrive, Fountain Square Brew Co., and host Brad Wrigley.
-                        </p>
                     </div>
                 </header>
-
-                <section
-                    aria-label="Event details"
-                    style={{
-                        ...sectionStyle,
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                        gap: `${spacing.sm}px`,
-                        marginBottom: `${spacing.md}px`,
-                    }}
-                >
-                    <div>
-                        <div style={{ fontSize: '13px', fontWeight: 800, color: colors.midnightCruise, textTransform: 'uppercase' }}>
-                            Event details
-                        </div>
-                        <p style={{ margin: '6px 0 0', color: colors.bridgeDrop, fontSize: '18px', fontWeight: 800 }}>
-                            Friday, Feb. 20 · 6–10 PM
-                        </p>
-                        <p style={{ margin: '3px 0 0', color: colors.bridgeDrop }}>Fountain Square Brew Co.</p>
-                    </div>
-                    <div>
-                        <div style={{ fontSize: '13px', fontWeight: 800, color: colors.midnightCruise, textTransform: 'uppercase' }}>
-                            Performer bonus
-                        </div>
-                        <p style={{ margin: '6px 0 0', color: colors.bridgeDrop, lineHeight: 1.45 }}>
-                            Performers may request a private recording of their set, shared only by email through SongDrive.
-                        </p>
-                    </div>
-                    <div>
-                        <div style={{ fontSize: '13px', fontWeight: 800, color: colors.midnightCruise, textTransform: 'uppercase' }}>
-                            Provided equipment
-                        </div>
-                        <p style={{ margin: '6px 0 0', color: colors.bridgeDrop, lineHeight: 1.45 }}>
-                            PA system with microphones and instrument hookups.
-                        </p>
-                    </div>
-                </section>
 
                 {submittedName ? (
                     <section

@@ -48,5 +48,6 @@ test('Open Stage thank-you screen can start another signup', async ({ page }) =>
 test('kiosk welcome screen includes a compact QR link to signup', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('signup-qr-badge')).toBeVisible();
-  await expect(page.getByText('/signup')).toBeVisible();
+  await expect(page.getByText('Signup')).toBeVisible();
+  await expect(page.getByText('/signup')).toHaveCount(0);
 });

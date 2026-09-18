@@ -284,21 +284,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
     });
 
     app.registerRoute('/signup', {}, () => {
-        const allParticipants = states.allParticipants.useState();
-        const myParticipantIds = userAgentState.myParticipantIds.useState();
-        const myParticipants = allParticipants.filter((participant) => myParticipantIds.includes(participant.id));
-
-        return (
-            <SignupPage
-                actions={actions}
-                myParticipants={myParticipants}
-                onAddMyParticipantId={(id) => {
-                    userAgentState.myParticipantIds.setStateImmer((ids: string[]) => {
-                        if (!ids.includes(id)) ids.push(id);
-                    });
-                }}
-            />
-        );
+        return <SignupPage actions={actions} />;
     });
 
     app.registerRoute('/backstage', {}, () => {

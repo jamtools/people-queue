@@ -21,6 +21,8 @@ test('Open Stage /signup submits a performer into the lineup', async ({ page }) 
   await page.getByRole('button', { name: 'Join the lineup' }).click();
   await expect(page.getByRole('heading', { name: 'Thanks for signing up!' })).toBeVisible();
   await expect(page.getByText(`${uniqueName} is in the lineup.`)).toBeVisible();
+  await expect(page.getByText('You can add another performer from this device or check the current queue.')).toHaveCount(0);
+  await expect(page.getByText('Your submissions')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Sign up another player' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'View queue' })).toBeVisible();
 

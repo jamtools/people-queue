@@ -1,14 +1,12 @@
 import React, { CSSProperties, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Participant, SocialLink } from '../types';
+import { SocialLink } from '../types';
 import type { Actions } from '../index';
 import { buildSocialUrl, generateSocialLinkId } from '../utils/socialLinks';
 import { borderRadius, colors, fontFamilies, hexToRgba, spacing } from '../styles';
 
 type SignupPageProps = {
     actions: Pick<Actions, 'addParticipant'>;
-    onAddMyParticipantId: (id: string) => void;
-    myParticipants: Participant[];
 };
 
 type ChoiceValue = '' | 'yes' | 'no';
@@ -94,7 +92,7 @@ function requiredMarker() {
     return <span aria-hidden="true" style={{ color: '#b42318' }}> *</span>;
 }
 
-export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: SignupPageProps) {
+export function SignupPage({ actions }: SignupPageProps) {
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
@@ -181,7 +179,7 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                 `SongDrive updates: ${songDriveUpdates === 'yes' ? 'Yes' : 'No'}`,
             ].join('\n');
 
-            const result = await actions.addParticipant({
+            await actions.addParticipant({
                 name: name.trim(),
                 description: bio.trim(),
                 socialLinks,
@@ -190,7 +188,6 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                 addToQueue: true,
             });
 
-            onAddMyParticipantId(result.id);
             setSubmittedName(name.trim());
             resetForm();
         } catch (submitError) {
@@ -307,24 +304,13 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                         >
                             {submittedName} is in the lineup.
                         </p>
-                        <p
-                            style={{
-                                margin: '0 auto 28px',
-                                maxWidth: '620px',
-                                color: hexToRgba(colors.bridgeDrop, 0.72),
-                                fontSize: '16px',
-                                lineHeight: 1.55,
-                            }}
-                        >
-                            You can add another performer from this device or check the current queue.
-                        </p>
                         <div
                             style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                                 gap: `${spacing.sm}px`,
                                 maxWidth: '520px',
-                                margin: '0 auto',
+                                margin: '28px auto 0',
                             }}
                         >
                             <button
@@ -566,36 +552,6 @@ export function SignupPage({ actions, onAddMyParticipantId, myParticipants }: Si
                     </form>
                 )}
 
-                {myParticipants.length > 0 && (
-                    <section
-                        aria-label="Your submissions"
-                        style={{
-                            ...sectionStyle,
-                            marginTop: `${spacing.md}px`,
-                        }}
-                    >
-                        <h2 style={{ margin: '0 0 8px', color: colors.bridgeDrop, fontSize: '22px' }}>Your submissions</h2>
-                        <div style={{ display: 'grid', gap: '10px' }}>
-                            {myParticipants.map((participant) => (
-                                <div
-                                    key={participant.id}
-                                    style={{
-                                        padding: '12px 14px',
-                                        borderRadius: `${borderRadius.medium}px`,
-                                        backgroundColor: colors.whiteNoise,
-                                        border: `1px solid ${hexToRgba(colors.bridgeDrop, 0.12)}`,
-                                        color: colors.bridgeDrop,
-                                    }}
-                                >
-                                    <strong>{participant.name}</strong>
-                                    <div style={{ fontSize: '13px', color: hexToRgba(colors.bridgeDrop, 0.7), marginTop: '4px' }}>
-                                        Added to the lineup from this device.
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                )}
             </div>
         </main>
     );

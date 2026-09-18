@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { Participant } from '../types';
+import { EventQueue, Participant } from '../types';
 import { QueueManager } from '../components/QueueManager';
 import { SocialLinksEditor } from '../components/SocialLinksEditor';
 import { ParticipantItem } from '../components/ParticipantItem';
@@ -10,20 +10,26 @@ type BackstagePageProps = {
     allParticipants: Participant[];
     queuedParticipantIds: string[];
     currentPerformerId: string | null;
+    events: EventQueue[];
+    activeEventId: string;
     googleFormUrl: string;
     songDriveWorkspaceUrl: string;
+    songDriveInviteUrl: string;
     showHelpText: boolean;
     autoRefreshEnabled: boolean;
     lastSyncTimestamp: number | null;
-    actions: Pick<Actions, 'updateParticipant' | 'reorderQueue' | 'removeParticipant' | 'removeFromQueue' | 'addToQueue' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'setSongDriveWorkspaceUrl' | 'toggleHelpText' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant' | 'toggleParticipantHere'>;
+    actions: Pick<Actions, 'updateParticipant' | 'reorderQueue' | 'removeParticipant' | 'removeFromQueue' | 'addToQueue' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'setSongDriveWorkspaceUrl' | 'setSongDriveInviteUrl' | 'toggleHelpText' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant' | 'toggleParticipantHere' | 'createEvent' | 'setActiveEvent' | 'renameEvent'>;
 };
 
 export function BackstagePage({
     allParticipants,
     queuedParticipantIds,
     currentPerformerId,
+    events,
+    activeEventId,
     googleFormUrl,
     songDriveWorkspaceUrl,
+    songDriveInviteUrl,
     showHelpText,
     autoRefreshEnabled,
     lastSyncTimestamp,
@@ -43,6 +49,10 @@ export function BackstagePage({
     const [queueFilter, setQueueFilter] = useState<'all' | 'in-queue' | 'not-in-queue'>('all');
     const [urlInput, setUrlInput] = useState(googleFormUrl);
     const [workspaceUrlInput, setWorkspaceUrlInput] = useState(songDriveWorkspaceUrl);
+    const [inviteUrlInput, setInviteUrlInput] = useState(songDriveInviteUrl);
+    const activeEvent = events.find((event) => event.id === activeEventId) ?? events[0];
+    const [eventNameInput, setEventNameInput] = useState(activeEvent?.name ?? 'Open Stage Night');
+    const [newEventName, setNewEventName] = useState('');
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncStatus, setSyncStatus] = useState<string | null>(null);
     const [manualName, setManualName] = useState('');
@@ -60,6 +70,14 @@ export function BackstagePage({
 
         return () => clearInterval(interval);
     }, [autoRefreshEnabled]);
+
+    useEffect(() => {
+        setEventNameInput(activeEvent?.name ?? 'Open Stage Night');
+    }, [activeEvent?.id, activeEvent?.name]);
+
+    useEffect(() => {
+        setInviteUrlInput(songDriveInviteUrl);
+    }, [songDriveInviteUrl]);
 
     const handleSync = async () => {
         setIsSyncing(true);
@@ -181,6 +199,9 @@ export function BackstagePage({
 
             <div style={{ marginBottom: '16px' }}>
                 <h2>Queue ({queuedParticipants.length})</h2>
+                <div style={{ fontSize: '14px', color: '#666' }}>
+                    Active event: {activeEvent?.name ?? 'Open Stage Night'}
+                </div>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
@@ -467,6 +488,119 @@ export function BackstagePage({
                     Configuration
                 </summary>
 
+            {/* Event Configuration */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#f0f8ff',
+                    border: '1px solid #1976d2',
+                    borderRadius: '8px'
+                }}
+            >
+                <h3 style={{ marginTop: 0, marginBottom: '12px', fontSize: '16px' }}>
+                    Active Event
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div>
+                        <label htmlFor="active-event-select" style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: 'bold' }}>
+                            Current event
+                        </label>
+                        <select
+                            id="active-event-select"
+                            aria-label="Current event"
+                            value={activeEventId}
+                            onChange={(event) => actions.setActiveEvent({ id: event.target.value })}
+                            style={{
+                                width: '100%',
+                                padding: '8px',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                fontSize: '14px'
+                            }}
+                        >
+                            {events.map((event) => (
+                                <option key={event.id} value={event.id}>
+                                    {event.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <input
+                            aria-label="Active event name"
+                            type="text"
+                            value={eventNameInput}
+                            onChange={(event) => setEventNameInput(event.target.value)}
+                            placeholder="Event name"
+                            style={{
+                                flex: '1 1 220px',
+                                padding: '8px',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                fontSize: '14px'
+                            }}
+                        />
+                        <button
+                            onClick={() => {
+                                if (!activeEvent) return;
+                                actions.renameEvent({ id: activeEvent.id, name: eventNameInput });
+                            }}
+                            style={{
+                                padding: '8px 16px',
+                                backgroundColor: '#1976d2',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '500',
+                                fontSize: '14px'
+                            }}
+                        >
+                            Rename Event
+                        </button>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <input
+                            aria-label="New event name"
+                            type="text"
+                            value={newEventName}
+                            onChange={(event) => setNewEventName(event.target.value)}
+                            placeholder="New event name"
+                            style={{
+                                flex: '1 1 220px',
+                                padding: '8px',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                fontSize: '14px'
+                            }}
+                        />
+                        <button
+                            onClick={async () => {
+                                if (!newEventName.trim()) {
+                                    alert('Event name is required');
+                                    return;
+                                }
+                                await actions.createEvent({ name: newEventName });
+                                setNewEventName('');
+                            }}
+                            style={{
+                                padding: '8px 16px',
+                                backgroundColor: '#4caf50',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '500',
+                                fontSize: '14px'
+                            }}
+                        >
+                            Create Event
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             {/* Google Form URL Configuration */}
             <div
                 style={{
@@ -581,6 +715,67 @@ export function BackstagePage({
                 {songDriveWorkspaceUrl && (
                     <div style={{ fontSize: '12px', color: '#666', wordBreak: 'break-all' }}>
                         Current URL: {songDriveWorkspaceUrl}
+                    </div>
+                )}
+            </div>
+
+            {/* SongDrive Invite URL Configuration */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}
+            >
+                <h3 style={{ marginTop: 0, marginBottom: '12px', fontSize: '16px' }}>
+                    SongDrive Invite Upload Link
+                </h3>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <input
+                        type="text"
+                        aria-label="SongDrive invite upload link"
+                        value={inviteUrlInput}
+                        onChange={(e) => setInviteUrlInput(e.target.value)}
+                        placeholder="https://songdrive.app/invite/..."
+                        style={{
+                            flex: 1,
+                            padding: '8px',
+                            border: '1px solid #ccc',
+                            borderRadius: '4px',
+                            fontSize: '14px'
+                        }}
+                    />
+                    <button
+                        aria-label="Save SongDrive invite upload link"
+                        onClick={async () => {
+                            if (inviteUrlInput && !inviteUrlInput.startsWith('https://')) {
+                                alert('URL must start with https://');
+                                return;
+                            }
+                            await actions.setSongDriveInviteUrl({ url: inviteUrlInput });
+                        }}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#1976d2',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            fontSize: '14px',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1565c0'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1976d2'}
+                    >
+                        Save
+                    </button>
+                </div>
+                {songDriveInviteUrl && (
+                    <div style={{ fontSize: '12px', color: '#666', wordBreak: 'break-all' }}>
+                        Current URL: {songDriveInviteUrl}
                     </div>
                 )}
             </div>

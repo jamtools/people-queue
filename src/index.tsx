@@ -1,6 +1,6 @@
 import React from 'react';
 import springboard from 'springboard';
-import { Participant, SocialLink } from './types';
+import { EventQueue, Participant, SocialLink } from './types';
 import { SignupPage } from './pages/SignupPage';
 import { LandingPage } from './pages/LandingPage';
 import { SignupQRPage } from './pages/SignupQRPage';
@@ -19,19 +19,79 @@ import { fetchParticipantsFromSheet } from './services/googleSheets';
 import '../server/public_assets';
 // @platform end
 
+const DEFAULT_EVENT_ID = 'event-open-stage-night';
+const DEFAULT_EVENT_NAME = 'Open Stage Night';
+const DEFAULT_SONGDRIVE_INVITE_URL = 'https://songdrive.app/invite/be8dbd0d263e602db70a3c252e';
+
 async function createResources(app: ModuleAPI) {
     const states = await app.createStates({
         allParticipants: [] as Participant[], // All signed-up people
         queuedParticipantIds: [] as string[], // IDs of participants in the performance queue
         currentPerformerId: null as string | null,
+        events: [{
+            id: DEFAULT_EVENT_ID,
+            name: DEFAULT_EVENT_NAME,
+            queuedParticipantIds: [],
+            currentPerformerId: null,
+            createdAt: Date.now(),
+        }] as EventQueue[],
+        activeEventId: DEFAULT_EVENT_ID as string,
         googleFormUrl: '' as string,
         songDriveWorkspaceUrl: '' as string,
+        songDriveInviteUrl: DEFAULT_SONGDRIVE_INVITE_URL as string,
         showHelpText: false as boolean,
         autoRefreshEnabled: false as boolean,
         lastSyncTimestamp: null as number | null,
     });
 
     const myParticipantIdsState = await app.statesAPI.createUserAgentState('myParticipantIds', [] as string[]);
+
+    const getActiveEvent = (): EventQueue => {
+        const events = states.events.getState();
+        const activeEventId = states.activeEventId.getState();
+        return events.find((event) => event.id === activeEventId) ?? events[0] ?? {
+            id: DEFAULT_EVENT_ID,
+            name: DEFAULT_EVENT_NAME,
+            queuedParticipantIds: [],
+            currentPerformerId: null,
+            createdAt: Date.now(),
+        };
+    };
+
+    const addParticipantToActiveEventQueue = (participantId: string) => {
+        const activeEventId = getActiveEvent().id;
+        states.events.setStateImmer((events: EventQueue[]) => {
+            let event = events.find((item) => item.id === activeEventId);
+            if (!event) {
+                event = {
+                    id: DEFAULT_EVENT_ID,
+                    name: DEFAULT_EVENT_NAME,
+                    queuedParticipantIds: [],
+                    currentPerformerId: null,
+                    createdAt: Date.now(),
+                };
+                events.push(event);
+            }
+
+            if (!event.queuedParticipantIds.includes(participantId)) {
+                event.queuedParticipantIds.push(participantId);
+            }
+        });
+    };
+
+    const removeParticipantFromAllEventQueues = (participantId: string) => {
+        states.events.setStateImmer((events: EventQueue[]) => {
+            for (const event of events) {
+                const index = event.queuedParticipantIds.findIndex((id) => id === participantId);
+                if (index !== -1) {
+                    event.queuedParticipantIds.splice(index, 1);
+                }
+                if (event.currentPerformerId === participantId) {
+                    event.currentPerformerId = null;
+                }
+            }
+        });
+    };
 
     const actions = app.createActions({
         addParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual' | 'signup'; sheetRowId?: number; addToQueue?: boolean }) => {
@@ -57,12 +117,55 @@ async function createResources(app: ModuleAPI) {
 
             // Optionally add to queue
             if (args.addToQueue) {
-                states.queuedParticipantIds.setStateImmer((ids: string[]) => {
-                    ids.push(newParticipant.id);
-                });
+                addParticipantToActiveEventQueue(newParticipant.id);
             }
 
             return { id: newParticipant.id };
+        },
+
+        signupParticipant: async (args: { participantId?: string; name: string; description?: string; socialLinks: SocialLink[]; notes?: string }) => {
+            const validatedSocialLinks = args.socialLinks.slice(0, 3);
+            let participantId = args.participantId;
+
+            if (participantId) {
+                let didUpdate = false;
+                states.allParticipants.setStateImmer((participants: Participant[]) => {
+                    const participant = participants.find((p: Participant) => p.id === participantId);
+                    if (participant) {
+                        participant.name = args.name;
+                        participant.description = args.description;
+                        participant.socialLinks = validatedSocialLinks;
+                        participant.notes = args.notes;
+                        participant.source = 'signup';
+                        didUpdate = true;
+                    }
+                });
+
+                if (!didUpdate) {
+                    participantId = undefined;
+                }
+            }
+
+            if (!participantId) {
+                participantId = `participant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                const newParticipant: Participant = {
+                    id: participantId,
+                    name: args.name,
+                    description: args.description,
+                    socialLinks: validatedSocialLinks,
+                    order: 0,
+                    notes: args.notes,
+                    source: 'signup',
+                    isHere: false,
+                };
+
+                states.allParticipants.setStateImmer((participants: Participant[]) => {
+                    participants.push(newParticipant);
+                });
+            }
+
+            addParticipantToActiveEventQueue(participantId);
+            return { id: participantId };
         },
 
         updateParticipant: async (args: { id: string; name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual' | 'signup'; sheetRowId?: number }) => {
@@ -92,30 +195,30 @@ async function createResources(app: ModuleAPI) {
         },
 
         addToQueue: async (args: { id: string }) => {
-            const queuedIds = states.queuedParticipantIds.getState();
-            if (!queuedIds.includes(args.id)) {
-                states.queuedParticipantIds.setStateImmer((ids: string[]) => {
-                    ids.push(args.id);
-                });
-            }
+            addParticipantToActiveEventQueue(args.id);
         },
 
         removeFromQueue: async (args: { id: string }) => {
-            states.queuedParticipantIds.setStateImmer((ids: string[]) => {
-                const index = ids.findIndex((id: string) => id === args.id);
-                if (index !== -1) {
-                    ids.splice(index, 1);
+            const activeEventId = getActiveEvent().id;
+            states.events.setStateImmer((events: EventQueue[]) => {
+                const event = events.find((item) => item.id === activeEventId);
+                if (!event) return;
+                const index = event.queuedParticipantIds.findIndex((id: string) => id === args.id);
+                if (index !== -1) event.queuedParticipantIds.splice(index, 1);
+                if (event.currentPerformerId === args.id) {
+                    event.currentPerformerId = null;
                 }
             });
-
-            // If this was the current performer, clear it
-            if (states.currentPerformerId.getState() === args.id) {
-                states.currentPerformerId.setState(null);
-            }
         },
 
         reorderQueue: async (args: { participantIds: string[] }) => {
-            states.queuedParticipantIds.setState(args.participantIds);
+            const activeEventId = getActiveEvent().id;
+            states.events.setStateImmer((events: EventQueue[]) => {
+                const event = events.find((item) => item.id === activeEventId);
+                if (event) {
+                    event.queuedParticipantIds = args.participantIds;
+                }
+            });
         },
 
         removeParticipant: async (args: { id: string }) => {
@@ -127,22 +230,17 @@ async function createResources(app: ModuleAPI) {
                 }
             });
 
-            // Remove from queue if present
-            states.queuedParticipantIds.setStateImmer((ids: string[]) => {
-                const index = ids.findIndex((id: string) => id === args.id);
-                if (index !== -1) {
-                    ids.splice(index, 1);
-                }
-            });
-
-            // Clear current performer if needed
-            if (states.currentPerformerId.getState() === args.id) {
-                states.currentPerformerId.setState(null);
-            }
+            removeParticipantFromAllEventQueues(args.id);
         },
 
         setCurrentPerformer: async (args: { id: string | null }) => {
-            states.currentPerformerId.setState(args.id);
+            const activeEventId = getActiveEvent().id;
+            states.events.setStateImmer((events: EventQueue[]) => {
+                const event = events.find((item) => item.id === activeEventId);
+                if (event) {
+                    event.currentPerformerId = args.id;
+                }
+            });
         },
 
         syncFromGoogleSheets: async () => {
@@ -235,12 +333,48 @@ async function createResources(app: ModuleAPI) {
 
             // Optionally add to queue
             if (args.addToQueue) {
-                states.queuedParticipantIds.setStateImmer((ids: string[]) => {
-                    ids.push(newParticipant.id);
-                });
+                addParticipantToActiveEventQueue(newParticipant.id);
             }
 
             return { id: newParticipant.id };
+        },
+
+        createEvent: async (args: { name: string }) => {
+            const trimmedName = args.name.trim();
+            if (!trimmedName) return {};
+            const event: EventQueue = {
+                id: `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                name: trimmedName,
+                queuedParticipantIds: [],
+                currentPerformerId: null,
+                createdAt: Date.now(),
+            };
+            states.events.setStateImmer((events: EventQueue[]) => {
+                events.push(event);
+            });
+            states.activeEventId.setState(event.id);
+            return { id: event.id };
+        },
+
+        setActiveEvent: async (args: { id: string }) => {
+            const exists = states.events.getState().some((event) => event.id === args.id);
+            if (exists) states.activeEventId.setState(args.id);
+            return {};
+        },
+
+        renameEvent: async (args: { id: string; name: string }) => {
+            const trimmedName = args.name.trim();
+            if (!trimmedName) return {};
+            states.events.setStateImmer((events: EventQueue[]) => {
+                const event = events.find((item) => item.id === args.id);
+                if (event) event.name = trimmedName;
+            });
+            return {};
+        },
+
+        setSongDriveInviteUrl: async (args: { url: string }) => {
+            states.songDriveInviteUrl.setState(args.url);
+            return {};
         },
     });
 
@@ -254,7 +388,10 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
 
     app.registerRoute('/', {}, () => {
         const allParticipants = states.allParticipants.useState();
-        const currentPerformerId = states.currentPerformerId.useState();
+        const events = states.events.useState();
+        const activeEventId = states.activeEventId.useState();
+        const activeEvent = events.find((event) => event.id === activeEventId) ?? events[0];
+        const currentPerformerId = activeEvent?.currentPerformerId ?? null;
 
         // Show WelcomePage when no performer is selected (pre-event)
         // Show DisplayPage when a performer is selected (during event)
@@ -284,15 +421,39 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
     });
 
     app.registerRoute('/signup', {}, () => {
-        return <SignupPage actions={actions} />;
+        const allParticipants = states.allParticipants.useState();
+        const events = states.events.useState();
+        const activeEventId = states.activeEventId.useState();
+        const songDriveInviteUrl = states.songDriveInviteUrl.useState();
+        const myParticipantIds = userAgentState.myParticipantIds.useState();
+        const myParticipants = allParticipants.filter((participant) => myParticipantIds.includes(participant.id));
+        const activeEvent = events.find((event) => event.id === activeEventId) ?? events[0];
+
+        return (
+            <SignupPage
+                actions={actions}
+                activeEvent={activeEvent}
+                myParticipants={myParticipants}
+                songDriveInviteUrl={songDriveInviteUrl}
+                onAddMyParticipantId={(id) => {
+                    userAgentState.myParticipantIds.setStateImmer((ids: string[]) => {
+                        if (!ids.includes(id)) ids.push(id);
+                    });
+                }}
+            />
+        );
     });
 
     app.registerRoute('/backstage', {}, () => {
         const allParticipants = states.allParticipants.useState();
-        const queuedParticipantIds = states.queuedParticipantIds.useState();
-        const currentPerformerId = states.currentPerformerId.useState();
+        const events = states.events.useState();
+        const activeEventId = states.activeEventId.useState();
+        const activeEvent = events.find((event) => event.id === activeEventId) ?? events[0];
+        const queuedParticipantIds = activeEvent?.queuedParticipantIds ?? [];
+        const currentPerformerId = activeEvent?.currentPerformerId ?? null;
         const googleFormUrl = states.googleFormUrl.useState();
         const songDriveWorkspaceUrl = states.songDriveWorkspaceUrl.useState();
+        const songDriveInviteUrl = states.songDriveInviteUrl.useState();
         const showHelpText = states.showHelpText.useState();
         const autoRefreshEnabled = states.autoRefreshEnabled.useState();
         const lastSyncTimestamp = states.lastSyncTimestamp.useState();
@@ -302,8 +463,11 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
                 allParticipants={allParticipants}
                 queuedParticipantIds={queuedParticipantIds}
                 currentPerformerId={currentPerformerId}
+                events={events}
+                activeEventId={activeEventId}
                 googleFormUrl={googleFormUrl}
                 songDriveWorkspaceUrl={songDriveWorkspaceUrl}
+                songDriveInviteUrl={songDriveInviteUrl}
                 showHelpText={showHelpText}
                 autoRefreshEnabled={autoRefreshEnabled}
                 lastSyncTimestamp={lastSyncTimestamp}
@@ -314,7 +478,10 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
 
     app.registerRoute('/display', {}, () => {
         const allParticipants = states.allParticipants.useState();
-        const currentPerformerId = states.currentPerformerId.useState();
+        const events = states.events.useState();
+        const activeEventId = states.activeEventId.useState();
+        const activeEvent = events.find((event) => event.id === activeEventId) ?? events[0];
+        const currentPerformerId = activeEvent?.currentPerformerId ?? null;
 
         return (
             <DisplayPage
@@ -331,9 +498,12 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
 
     app.registerRoute('/queue', {}, () => {
         const allParticipants = states.allParticipants.useState();
-        const queuedParticipantIds = states.queuedParticipantIds.useState();
-        const currentPerformerId = states.currentPerformerId.useState();
-        return <QueueListPage allParticipants={allParticipants} queuedParticipantIds={queuedParticipantIds} currentPerformerId={currentPerformerId} />;
+        const events = states.events.useState();
+        const activeEventId = states.activeEventId.useState();
+        const activeEvent = events.find((event) => event.id === activeEventId) ?? events[0];
+        const queuedParticipantIds = activeEvent?.queuedParticipantIds ?? [];
+        const currentPerformerId = activeEvent?.currentPerformerId ?? null;
+        return <QueueListPage allParticipants={allParticipants} queuedParticipantIds={queuedParticipantIds} currentPerformerId={currentPerformerId} eventName={activeEvent?.name ?? DEFAULT_EVENT_NAME} />;
     });
 
     return {};

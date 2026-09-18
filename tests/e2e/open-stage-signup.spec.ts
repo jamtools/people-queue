@@ -4,7 +4,7 @@ test('Open Stage /signup submits a performer into the lineup', async ({ page }) 
   const uniqueName = `Test Stage Name ${Date.now()}`;
 
   await page.goto('/signup');
-  await expect(page.getByRole('heading', { name: 'Open Stage Night' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Join the lineup' })).toBeVisible();
 
   await page.getByLabel('Name (or stage name)').fill(uniqueName);
   await page.getByLabel('Tell us about yourself').fill('Acoustic songs inspired by late-night city walks.');
@@ -21,6 +21,8 @@ test('Open Stage /signup submits a performer into the lineup', async ({ page }) 
   await page.getByRole('button', { name: 'Join the lineup' }).click();
   await expect(page.getByRole('heading', { name: 'Thanks for signing up!' })).toBeVisible();
   await expect(page.getByText(`${uniqueName} is in the lineup.`)).toBeVisible();
+  await expect(page.getByText('Need to upload a track for your set?')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open SongDrive upload link' })).toHaveAttribute('href', /https:\/\/songdrive\.app\/invite\//);
   await expect(page.getByText('You can add another performer from this device or check the current queue.')).toHaveCount(0);
   await expect(page.getByText('Your submissions')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Sign up another player' })).toBeVisible();
@@ -28,6 +30,83 @@ test('Open Stage /signup submits a performer into the lineup', async ({ page }) 
 
   await page.goto('/queue');
   await expect(page.getByText(uniqueName)).toBeVisible();
+});
+
+test('Backstage controls the SongDrive invite upload link shown after signup', async ({ page }) => {
+  const customInviteUrl = `https://songdrive.app/invite/test-${Date.now()}`;
+  const performerName = `Custom Invite Artist ${Date.now()}`;
+
+  await page.goto('/backstage');
+  await page.getByText('Configuration', { exact: true }).click();
+  await page.getByRole('textbox', { name: 'SongDrive invite upload link' }).fill(customInviteUrl);
+  await page.getByRole('button', { name: 'Save SongDrive invite upload link' }).click();
+
+  await page.goto('/signup');
+  await page.getByLabel('Name (or stage name)').fill(performerName);
+  await page.getByLabel('Tell us about yourself').fill('Needs an upload link.');
+  await page.getByLabel('No thanks').first().check();
+  await page.getByLabel('I understand SongDrive may use event photos for promotion.').check();
+  await page.getByLabel('I understand SongDrive may use short recap clips.').check();
+  await page.getByLabel('No thanks').last().check();
+  await page.getByRole('button', { name: 'Join the lineup' }).click();
+
+  await expect(page.getByRole('link', { name: 'Open SongDrive upload link' })).toHaveAttribute('href', customInviteUrl);
+});
+
+test('Open Stage signup lets returning device users prefill a previous performer', async ({ page }) => {
+  const uniqueName = `Returning Artist ${Date.now()}`;
+
+  await page.goto('/signup');
+  await page.getByLabel('Name (or stage name)').fill(uniqueName);
+  await page.getByLabel('Tell us about yourself').fill('Loop-based ambient songs.');
+  await page.getByLabel('No thanks').first().check();
+  await page.getByLabel('I understand SongDrive may use event photos for promotion.').check();
+  await page.getByLabel('I understand SongDrive may use short recap clips.').check();
+  await page.getByLabel('No thanks').last().check();
+  await expect(page.getByText('If you need to upload a backing track or mix for your act')).toBeVisible();
+  await page.getByRole('button', { name: 'Join the lineup' }).click();
+  await expect(page.getByRole('heading', { name: 'Thanks for signing up!' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Sign up another player' }).click();
+  await expect(page.getByText('Your submissions')).toBeVisible();
+  await page.getByRole('button', { name: 'Re-signup' }).click();
+  await expect(page.getByLabel('Name (or stage name)')).toHaveValue(uniqueName);
+  await expect(page.getByLabel('Tell us about yourself')).toHaveValue('Loop-based ambient songs.');
+
+  await page.getByLabel('No thanks').first().check();
+  await page.getByLabel('I understand SongDrive may use event photos for promotion.').check();
+  await page.getByLabel('I understand SongDrive may use short recap clips.').check();
+  await page.getByLabel('No thanks').last().check();
+  await page.getByRole('button', { name: 'Join the lineup' }).click();
+  await page.goto('/queue');
+  await expect(page.getByText(uniqueName)).toHaveCount(1);
+});
+
+test('Backstage can create a separate active event queue while preserving people', async ({ page }) => {
+  const performerName = `Event One Artist ${Date.now()}`;
+  const eventName = `Second Event ${Date.now()}`;
+
+  await page.goto('/signup');
+  await page.getByLabel('Name (or stage name)').fill(performerName);
+  await page.getByLabel('Tell us about yourself').fill('First event performer.');
+  await page.getByLabel('No thanks').first().check();
+  await page.getByLabel('I understand SongDrive may use event photos for promotion.').check();
+  await page.getByLabel('I understand SongDrive may use short recap clips.').check();
+  await page.getByLabel('No thanks').last().check();
+  await page.getByRole('button', { name: 'Join the lineup' }).click();
+
+  await page.goto('/backstage');
+  await expect(page.getByText(performerName, { exact: true }).last()).toBeVisible();
+  await page.getByText('Configuration', { exact: true }).click();
+  await page.getByLabel('New event name').fill(eventName);
+  await page.getByRole('button', { name: 'Create Event' }).click();
+  await expect(page.getByText(`Active event: ${eventName}`)).toBeVisible();
+  await expect(page.getByText('No participants in queue yet.')).toBeVisible();
+  await expect(page.getByText(performerName, { exact: true })).toBeVisible();
+
+  await page.goto('/queue');
+  await expect(page.getByText(eventName)).toBeVisible();
+  await expect(page.getByText(performerName)).toHaveCount(0);
 });
 
 test('Open Stage thank-you screen can start another signup', async ({ page }) => {
@@ -43,7 +122,7 @@ test('Open Stage thank-you screen can start another signup', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Thanks for signing up!' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Sign up another player' }).click();
-  await expect(page.getByRole('heading', { name: 'Open Stage Night' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Join the lineup' })).toBeVisible();
   await expect(page.getByLabel('Name (or stage name)')).toBeEmpty();
 });
 

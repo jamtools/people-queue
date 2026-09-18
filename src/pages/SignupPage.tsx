@@ -1,12 +1,16 @@
 import React, { CSSProperties, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { SocialLink } from '../types';
+import { EventQueue, Participant, SocialLink } from '../types';
 import type { Actions } from '../index';
 import { buildSocialUrl, generateSocialLinkId } from '../utils/socialLinks';
 import { borderRadius, colors, fontFamilies, hexToRgba, spacing } from '../styles';
 
 type SignupPageProps = {
-    actions: Pick<Actions, 'addParticipant'>;
+    actions: Pick<Actions, 'signupParticipant'>;
+    activeEvent?: EventQueue;
+    myParticipants: Participant[];
+    songDriveInviteUrl: string;
+    onAddMyParticipantId: (id: string) => void;
 };
 
 type ChoiceValue = '' | 'yes' | 'no';
@@ -119,8 +123,15 @@ function SignupFormError({
     );
 }
 
-export function SignupPage({ actions }: SignupPageProps) {
+export function SignupPage({
+    actions,
+    activeEvent,
+    myParticipants,
+    songDriveInviteUrl,
+    onAddMyParticipantId,
+}: SignupPageProps) {
     const navigate = useNavigate();
+    const [editingParticipantId, setEditingParticipantId] = useState<string | null>(null);
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
     const [email, setEmail] = useState('');
@@ -161,9 +172,31 @@ export function SignupPage({ actions }: SignupPageProps) {
     };
 
     const handleSignUpAnotherPlayer = () => {
+        setEditingParticipantId(null);
         setSubmittedName(null);
         setError(null);
         resetForm();
+    };
+
+    const handlePrefillParticipant = (participant: Participant) => {
+        const instagram = participant.socialLinks.find((link) => link.type === 'instagram')?.url ?? '';
+        const tiktok = participant.socialLinks.find((link) => link.type === 'tiktok')?.url ?? '';
+        const other = participant.socialLinks.find((link) => link.type !== 'instagram' && link.type !== 'tiktok')?.url ?? '';
+
+        setEditingParticipantId(participant.id);
+        setSubmittedName(null);
+        setError(null);
+        setName(participant.name);
+        setBio(participant.description ?? '');
+        setInstagramHandle(instagram);
+        setTiktokHandle(tiktok);
+        setOtherHandle(other);
+        setEmail('');
+        setEquipmentNeeds('');
+        setPrivateVideo('');
+        setPhotoConsent(false);
+        setRecapConsent(false);
+        setSongDriveUpdates('');
     };
 
     const clearErrorOnFormChange = () => {
@@ -212,16 +245,17 @@ export function SignupPage({ actions }: SignupPageProps) {
                 `SongDrive updates: ${songDriveUpdates === 'yes' ? 'Yes' : 'No'}`,
             ].join('\n');
 
-            await actions.addParticipant({
+            const result = await actions.signupParticipant({
+                participantId: editingParticipantId ?? undefined,
                 name: name.trim(),
                 description: bio.trim(),
                 socialLinks,
                 notes,
-                source: 'signup',
-                addToQueue: true,
             });
 
+            onAddMyParticipantId(result.id);
             setSubmittedName(name.trim());
+            setEditingParticipantId(null);
             resetForm();
         } catch (submitError) {
             console.error('Open Stage signup failed:', submitError);
@@ -282,10 +316,63 @@ export function SignupPage({ actions }: SignupPageProps) {
                                 letterSpacing: '-0.03em',
                             }}
                         >
-                            Open Stage Night
+                            {activeEvent?.name ?? 'Open Stage Night'}
                         </h1>
                     </div>
                 </header>
+
+                {myParticipants.length > 0 && !submittedName && (
+                    <section
+                        aria-label="Your submissions"
+                        style={{
+                            ...sectionStyle,
+                            marginBottom: `${spacing.md}px`,
+                        }}
+                    >
+                        <h2 style={{ margin: '0 0 8px', color: colors.bridgeDrop, fontSize: '22px' }}>Your submissions</h2>
+                        <p style={{ ...helperStyle, marginBottom: `${spacing.sm}px` }}>
+                            Pick a previous performer to prefill this event signup. Submitting will update that saved performer and add them to the current event queue.
+                        </p>
+                        <div style={{ display: 'grid', gap: '10px' }}>
+                            {myParticipants.map((participant) => (
+                                <div
+                                    key={participant.id}
+                                    style={{
+                                        display: 'flex',
+                                        gap: '12px',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        flexWrap: 'wrap',
+                                        padding: '12px 14px',
+                                        borderRadius: `${borderRadius.medium}px`,
+                                        backgroundColor: colors.whiteNoise,
+                                        border: `1px solid ${hexToRgba(colors.bridgeDrop, 0.12)}`,
+                                        color: colors.bridgeDrop,
+                                    }}
+                                >
+                                    <div>
+                                        <strong>{participant.name}</strong>
+                                        <div style={{ fontSize: '13px', color: hexToRgba(colors.bridgeDrop, 0.7), marginTop: '4px' }}>
+                                            Saved performer profile from this device.
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handlePrefillParticipant(participant)}
+                                        style={{
+                                            ...secondaryButtonStyle,
+                                            minHeight: '44px',
+                                            padding: '10px 14px',
+                                            fontSize: '14px',
+                                        }}
+                                    >
+                                        Re-signup
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {submittedName ? (
                     <section
@@ -337,6 +424,45 @@ export function SignupPage({ actions }: SignupPageProps) {
                         >
                             {submittedName} is in the lineup.
                         </p>
+                        {songDriveInviteUrl && (
+                            <div
+                                style={{
+                                    margin: '24px auto 0',
+                                    maxWidth: '560px',
+                                    padding: '16px',
+                                    borderRadius: `${borderRadius.large}px`,
+                                    backgroundColor: colors.whiteNoise,
+                                    border: `1px solid ${hexToRgba(colors.midnightCruise, 0.14)}`,
+                                }}
+                            >
+                                <p
+                                    style={{
+                                        margin: '0 0 12px',
+                                        color: colors.bridgeDrop,
+                                        fontSize: '17px',
+                                        fontWeight: 800,
+                                        lineHeight: 1.4,
+                                    }}
+                                >
+                                    Need to upload a track for your set?
+                                </p>
+                                <a
+                                    href={songDriveInviteUrl}
+                                    style={{
+                                        ...primaryButtonStyle,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        textDecoration: 'none',
+                                        minHeight: '44px',
+                                        padding: '10px 16px',
+                                        fontSize: '15px',
+                                    }}
+                                >
+                                    Open SongDrive upload link
+                                </a>
+                            </div>
+                        )}
                         <div
                             style={{
                                 display: 'grid',
@@ -431,6 +557,9 @@ export function SignupPage({ actions }: SignupPageProps) {
                             style={{ ...fieldStyle, resize: 'vertical' }}
                             placeholder="List instruments, mics, DI, tracks, or other setup notes."
                         />
+                        <p style={helperStyle}>
+                            If you need to upload a backing track or mix for your act, you’ll use the upload link that will be shown after signing up.
+                        </p>
                     </div>
 
                     <fieldset style={{ margin: 0, padding: 0, border: 0 }}>

@@ -19,3 +19,11 @@ export type Participant = {
     sheetRowId?: number;
     isHere?: boolean; // Whether the performer is physically present
 };
+
+export type EventQueue = {
+    id: string;
+    name: string;
+    queuedParticipantIds: string[];
+    currentPerformerId: string | null;
+    createdAt: number;
+};

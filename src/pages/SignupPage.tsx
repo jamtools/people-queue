@@ -92,6 +92,33 @@ function requiredMarker() {
     return <span aria-hidden="true" style={{ color: '#b42318' }}> *</span>;
 }
 
+function SignupFormError({
+    error,
+    placement,
+    announce = false,
+}: {
+    error: string;
+    placement: 'top' | 'bottom';
+    announce?: boolean;
+}) {
+    return (
+        <div
+            data-testid={`signup-form-error-${placement}`}
+            role={announce ? 'alert' : undefined}
+            style={{
+                padding: '14px 16px',
+                borderRadius: `${borderRadius.medium}px`,
+                backgroundColor: '#fef3f2',
+                color: '#b42318',
+                border: '1px solid #fecdca',
+                fontWeight: 700,
+            }}
+        >
+            {error}
+        </div>
+    );
+}
+
 export function SignupPage({ actions }: SignupPageProps) {
     const navigate = useNavigate();
     const [name, setName] = useState('');
@@ -341,19 +368,7 @@ export function SignupPage({ actions }: SignupPageProps) {
                         }}
                     >
                         {error && (
-                            <div
-                                role="alert"
-                                style={{
-                                    padding: '14px 16px',
-                                    borderRadius: `${borderRadius.medium}px`,
-                                    backgroundColor: '#fef3f2',
-                                    color: '#b42318',
-                                    border: '1px solid #fecdca',
-                                    fontWeight: 700,
-                                }}
-                            >
-                                {error}
-                            </div>
+                            <SignupFormError error={error} placement="top" announce />
                         )}
 
                         <div>
@@ -538,17 +553,21 @@ export function SignupPage({ actions }: SignupPageProps) {
                         </div>
                     </fieldset>
 
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            style={{
-                                ...primaryButtonStyle,
-                                backgroundColor: isSubmitting ? hexToRgba(colors.midnightCruise, 0.58) : colors.midnightCruise,
-                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                            }}
-                        >
-                            {isSubmitting ? 'Adding you…' : 'Join the lineup'}
-                        </button>
+                    {error && (
+                        <SignupFormError error={error} placement="bottom" />
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        style={{
+                            ...primaryButtonStyle,
+                            backgroundColor: isSubmitting ? hexToRgba(colors.midnightCruise, 0.58) : colors.midnightCruise,
+                            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                        }}
+                    >
+                        {isSubmitting ? 'Adding you…' : 'Join the lineup'}
+                    </button>
                     </form>
                 )}
 

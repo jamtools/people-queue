@@ -47,6 +47,16 @@ test('Open Stage thank-you screen can start another signup', async ({ page }) =>
   await expect(page.getByLabel('Name (or stage name)')).toBeEmpty();
 });
 
+test('Open Stage signup shows validation errors at the top and bottom of the form', async ({ page }) => {
+  await page.goto('/signup');
+
+  await page.getByRole('button', { name: 'Join the lineup' }).click();
+
+  const expectedError = 'Please enter your name or stage name.';
+  await expect(page.getByTestId('signup-form-error-top')).toContainText(expectedError);
+  await expect(page.getByTestId('signup-form-error-bottom')).toContainText(expectedError);
+});
+
 test('kiosk welcome screen includes a compact QR link to signup', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('signup-qr-badge')).toBeVisible();

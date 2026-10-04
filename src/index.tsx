@@ -16,6 +16,7 @@ import './styles/fonts.css';
 
 // @platform "node"
 import { fetchParticipantsFromSheet } from './services/googleSheets';
+import { sendDiscordSignupNotification, type DiscordSignupSource } from './services/discordWebhook';
 import '../server/public_assets';
 // @platform end
 
@@ -42,6 +43,7 @@ async function createResources(app: ModuleAPI) {
         showHelpText: false as boolean,
         autoRefreshEnabled: false as boolean,
         lastSyncTimestamp: null as number | null,
+        discordWebhookIncludePerformerName: false as boolean,
     });
 
     const myParticipantIdsState = await app.statesAPI.createUserAgentState('myParticipantIds', [] as string[]);
@@ -93,6 +95,20 @@ async function createResources(app: ModuleAPI) {
         });
     };
 
+    const notifyDiscordSignup = async (participant: Participant, source: DiscordSignupSource) => {
+        const activeEvent = getActiveEvent();
+        const queueIndex = activeEvent.queuedParticipantIds.findIndex((id) => id === participant.id);
+        await sendDiscordSignupNotification({
+            notice: {
+                participant,
+                eventName: activeEvent.name,
+                queuePosition: queueIndex === -1 ? null : queueIndex + 1,
+                includePerformerName: states.discordWebhookIncludePerformerName.getState(),
+                source,
+            },
+        });
+    };
+
     const actions = app.createActions({
         addParticipant: async (args: { name: string; description?: string; socialLinks: SocialLink[]; notes?: string; source?: 'sheets' | 'manual' | 'signup'; sheetRowId?: number; addToQueue?: boolean }) => {
             // Enforce 3-link maximum (take first 3 if more provided)
@@ -126,6 +142,7 @@ async function createResources(app: ModuleAPI) {
         signupParticipant: async (args: { participantId?: string; name: string; description?: string; socialLinks: SocialLink[]; notes?: string }) => {
             const validatedSocialLinks = args.socialLinks.slice(0, 3);
             let participantId = args.participantId;
+            let signedUpParticipant: Participant | undefined;
 
             if (participantId) {
                 let didUpdate = false;
@@ -137,6 +154,7 @@ async function createResources(app: ModuleAPI) {
                         participant.socialLinks = validatedSocialLinks;
                         participant.notes = args.notes;
                         participant.source = 'signup';
+                        signedUpParticipant = { ...participant };
                         didUpdate = true;
                     }
                 });
@@ -162,9 +180,15 @@ async function createResources(app: ModuleAPI) {
                 states.allParticipants.setStateImmer((participants: Participant[]) => {
                     participants.push(newParticipant);
                 });
+                signedUpParticipant = newParticipant;
             }
 
             addParticipantToActiveEventQueue(participantId);
+            if (signedUpParticipant) {
+                void notifyDiscordSignup(signedUpParticipant, 'signup').catch((error) => {
+                    console.warn('Discord signup notification failed:', error);
+                });
+            }
             return { id: participantId };
         },
 
@@ -336,6 +360,9 @@ async function createResources(app: ModuleAPI) {
                 addParticipantToActiveEventQueue(newParticipant.id);
             }
 
+            void notifyDiscordSignup(newParticipant, 'manual').catch((error) => {
+                console.warn('Discord signup notification failed:', error);
+            });
             return { id: newParticipant.id };
         },
 
@@ -374,6 +401,11 @@ async function createResources(app: ModuleAPI) {
 
         setSongDriveInviteUrl: async (args: { url: string }) => {
             states.songDriveInviteUrl.setState(args.url);
+            return {};
+        },
+
+        setDiscordWebhookIncludePerformerName: async (args: { enabled: boolean }) => {
+            states.discordWebhookIncludePerformerName.setState(args.enabled);
             return {};
         },
     });
@@ -457,6 +489,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
         const showHelpText = states.showHelpText.useState();
         const autoRefreshEnabled = states.autoRefreshEnabled.useState();
         const lastSyncTimestamp = states.lastSyncTimestamp.useState();
+        const discordWebhookIncludePerformerName = states.discordWebhookIncludePerformerName.useState();
 
         return (
             <BackstagePage
@@ -471,6 +504,7 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
                 showHelpText={showHelpText}
                 autoRefreshEnabled={autoRefreshEnabled}
                 lastSyncTimestamp={lastSyncTimestamp}
+                discordWebhookIncludePerformerName={discordWebhookIncludePerformerName}
                 actions={actions}
             />
         );

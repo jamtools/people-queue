@@ -18,7 +18,8 @@ type BackstagePageProps = {
     showHelpText: boolean;
     autoRefreshEnabled: boolean;
     lastSyncTimestamp: number | null;
-    actions: Pick<Actions, 'updateParticipant' | 'reorderQueue' | 'removeParticipant' | 'removeFromQueue' | 'addToQueue' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'setSongDriveWorkspaceUrl' | 'setSongDriveInviteUrl' | 'toggleHelpText' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant' | 'toggleParticipantHere' | 'createEvent' | 'setActiveEvent' | 'renameEvent'>;
+    discordWebhookIncludePerformerName: boolean;
+    actions: Pick<Actions, 'updateParticipant' | 'reorderQueue' | 'removeParticipant' | 'removeFromQueue' | 'addToQueue' | 'setCurrentPerformer' | 'setGoogleFormUrl' | 'setSongDriveWorkspaceUrl' | 'setSongDriveInviteUrl' | 'toggleHelpText' | 'syncFromGoogleSheets' | 'setAutoRefresh' | 'addManualParticipant' | 'toggleParticipantHere' | 'createEvent' | 'setActiveEvent' | 'renameEvent' | 'setDiscordWebhookIncludePerformerName'>;
 };
 
 export function BackstagePage({
@@ -33,6 +34,7 @@ export function BackstagePage({
     showHelpText,
     autoRefreshEnabled,
     lastSyncTimestamp,
+    discordWebhookIncludePerformerName,
     actions,
 }: BackstagePageProps) {
     const navigate = useNavigate();
@@ -778,6 +780,33 @@ export function BackstagePage({
                         Current URL: {songDriveInviteUrl}
                     </div>
                 )}
+            </div>
+
+            {/* Discord Notification Settings */}
+            <div
+                style={{
+                    padding: '16px',
+                    marginBottom: '24px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px'
+                }}
+            >
+                <h3 style={{ marginTop: 0, marginBottom: '12px', fontSize: '16px' }}>
+                    Discord Notification Settings
+                </h3>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+                    <input
+                        type="checkbox"
+                        checked={discordWebhookIncludePerformerName}
+                        onChange={(e) => actions.setDiscordWebhookIncludePerformerName({ enabled: e.target.checked })}
+                        style={{ cursor: 'pointer' }}
+                    />
+                    Include performer name in Discord signup notifications
+                </label>
+                <div style={{ fontSize: '12px', color: '#666', marginTop: '8px', marginLeft: '24px' }}>
+                    Off by default. When off, Discord only receives the event and queue position.
+                </div>
             </div>
 
             {/* QR Code Screen Help Text Toggle */}

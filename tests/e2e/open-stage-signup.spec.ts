@@ -53,6 +53,19 @@ test('Backstage controls the SongDrive invite upload link shown after signup', a
   await expect(page.getByRole('link', { name: 'Open SongDrive upload link' })).toHaveAttribute('href', customInviteUrl);
 });
 
+test('Backstage controls whether Discord signup notifications include performer names', async ({ page }) => {
+  await page.goto('/backstage');
+  await page.getByText('Configuration', { exact: true }).click();
+
+  const checkbox = page.getByLabel('Include performer name in Discord signup notifications');
+  if (await checkbox.isChecked()) {
+    await checkbox.click();
+  }
+  await expect(checkbox).not.toBeChecked();
+  await checkbox.click();
+  await expect(checkbox).toBeChecked();
+});
+
 test('Open Stage signup lets returning device users prefill a previous performer', async ({ page }) => {
   const uniqueName = `Returning Artist ${Date.now()}`;
 

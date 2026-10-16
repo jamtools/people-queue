@@ -9,9 +9,10 @@ type QueueListPageProps = {
     allParticipants: Participant[];
     queuedParticipantIds: string[];
     currentPerformerId: string | null;
+    eventName: string;
 };
 
-export function QueueListPage({ allParticipants, queuedParticipantIds, currentPerformerId }: QueueListPageProps) {
+export function QueueListPage({ allParticipants, queuedParticipantIds, currentPerformerId, eventName }: QueueListPageProps) {
     const navigate = useNavigate();
 
     // Get queued participants in order
@@ -63,6 +64,15 @@ export function QueueListPage({ allParticipants, queuedParticipantIds, currentPe
                 }}>
                     Performance Queue
                 </h1>
+
+                <p style={{
+                    fontSize: '16px',
+                    color: hexToRgba(colors.whiteNoise, 0.9),
+                    textAlign: 'center',
+                    marginBottom: '8px'
+                }}>
+                    {eventName}
+                </p>
 
                 <p style={{
                     fontSize: '16px',

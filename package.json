@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "packageManager": "pnpm@10.23.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "sb dev src/index.tsx",
     "build": "sb build src/index.tsx",
     "start": "sb start",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +34,7 @@
     "springboard-server": "0.16.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/node": "^25.0.0",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.7",
@@ -38,5 +42,11 @@
     "springboard-cli": "0.16.0",
     "typescript": "^5.9.3"
   },
-  "type": "module"
+  "type": "module",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
+  }
 }

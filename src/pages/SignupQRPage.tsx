@@ -31,6 +31,8 @@ export function SignupQRPage({
                     justifyContent: 'center',
                     minHeight: '100vh',
                     padding: `${spacing.xl}px`,
+                    boxSizing: 'border-box',
+                    transform: 'translateX(clamp(-40px, -2.5vw, -16px))',
                 }}
             >
                 {/* Dual QR Code Container */}

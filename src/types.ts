@@ -15,7 +15,15 @@ export type Participant = {
     order: number;
     isCurrentlyPerforming?: boolean;
     notes?: string;
-    source?: 'sheets' | 'manual';
+    source?: 'sheets' | 'manual' | 'signup';
     sheetRowId?: number;
     isHere?: boolean; // Whether the performer is physically present
+};
+
+export type EventQueue = {
+    id: string;
+    name: string;
+    queuedParticipantIds: string[];
+    currentPerformerId: string | null;
+    createdAt: number;
 };

@@ -71,15 +71,12 @@ function SortableItem({
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        cursor: isDragging ? 'grabbing' : 'grab',
     };
 
     return (
         <div
             ref={setNodeRef}
             style={style}
-            {...attributes}
-            {...listeners}
         >
             <div
                 style={{
@@ -196,11 +193,14 @@ function SortableItem({
                             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flex: 1 }}>
                                 <div style={{
                                     padding: '4px',
-                                    cursor: 'grab',
+                                    cursor: isDragging ? 'grabbing' : 'grab',
                                     color: '#999',
                                     display: 'flex',
                                     alignItems: 'center'
-                                }}>
+                                }}
+                                    {...attributes}
+                                    {...listeners}
+                                >
                                     <IconGripVertical size={20} />
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -470,9 +470,7 @@ export function QueueManager({
     };
 
     const handleDelete = (id: string) => {
-        if (confirm('Remove this participant from the queue?')) {
-            actions.removeFromQueue({ id });
-        }
+        actions.removeFromQueue({ id });
     };
 
     const handleStartEdit = (participant: Participant) => {

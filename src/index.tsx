@@ -4,6 +4,7 @@ import { EventQueue, Participant, SocialLink } from './types';
 import { SignupPage } from './pages/SignupPage';
 import { LandingPage } from './pages/LandingPage';
 import { SignupQRPage } from './pages/SignupQRPage';
+import { MobileSignupQRPage } from './pages/MobileSignupQRPage';
 import { BackstagePage } from './pages/BackstagePage';
 import { DisplayPage } from './pages/DisplayPage';
 import { PerformerProfilePage } from './pages/PerformerProfilePage';
@@ -438,6 +439,8 @@ springboard.registerModule('open-mic-queue', {}, async (app) => {
             />
         );
     });
+
+    app.registerRoute('/signup-code', {}, () => <MobileSignupQRPage />);
 
     app.registerRoute('/signup-qr', {}, () => {
         const googleFormUrl = states.googleFormUrl.useState();

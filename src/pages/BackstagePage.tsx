@@ -131,9 +131,24 @@ export function BackstagePage({
 
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h1>Backstage - Queue Management</h1>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    <button
+                        onClick={() => navigate('/signup-code')}
+                        style={{
+                            padding: '12px 24px',
+                            fontSize: '16px',
+                            backgroundColor: '#1976d2',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                        }}
+                    >
+                        Show signup QR code
+                    </button>
                     <button
                         onClick={() => navigate('/')}
                         style={{
